@@ -2,34 +2,45 @@
 
 ## PRESENTATION
 
-NodeJS est un environnement d'execution  Javascript basé sur le moteur Javascript Chrome V8.
+NodeJS est un environnement d'execution Javascript basé sur le moteur Javascript Chrome V8.
 
 Lien vers tutoriel Javascript : [Javascipt Openclassrooms](https://openclassrooms.com/fr/courses/2984401-apprenez-a-coder-avec-javascript)
 Lien vers tutoriel NodeJS : [NodeJS Openclassrooms](https://openclassrooms.com/fr/courses/1056721-des-applications-ultra-rapides-avec-node-js)
 
-Il permet d'executer du Javascript en dehors du navigateur.
-Il ouvre la possibilité d'executer du Javascript coté serveur.
+Il permet d'exécuter du Javascript en dehors du navigateur.
+Il ouvre la possibilité d'exécuter du Javascript coté serveur.
 
 Ce qui fait la performance de NodeJS :
 
 * **base sur le moteur d'execution V8 de Chrome qui analyse et execute le code très rapidement (compilation JustInTime)**
 * **Javascript => code non bloquant basé sur la notion d'évènement *(gros avantage mais necessaire de bien intégrer la notion de Callback et de de Promise)***
 
-## INSTALLATION
+## PREPARATION DE L'ENVIRONNEMENT DE TEST
 
-Au lien suivant, télécharger le LTS : https://nodejs.org/en/
+Au lien suivant, télécharger le Current : https://nodejs.org/en/
 
-### 1. INSTALLER SOUS LINUX (en manuel)
+### 1. PREPARER L'ENVIRONNEMENT SOUS LINUX
 
+#### INSTALLER NODEJS (en manuel)
 Dans le terminal :
 
-1. Décompresser l'archive:
-   `tar -xGf node-v13.5.0-linux-x64.tar.xz`
-2. Se positionner dans le dossier node:
-   `cd node-v13.5.0-linux-x64`
-3. Faire l'installation (la commande va copier toute l'arborescence sur dossier dans /usr):
+1. Telecharger l'archive node-vXX.XX.XX-linux-x64.tar.xz
+2. Décompresser l'archive:
+   `tar -xGf node-vXX.XX.XX-linux-x64.tar.xz`
+3. Se positionner dans le dossier node:
+   `cd node-vXX.XX.XX-linux-x64`
+4. Faire l'installation (la commande va copier toute l'arborescence sur dossier dans /usr):
    `sudo cp -R * /usr/`
-4. Controler l'installation dans le terminal:
+5. Controler l'installation dans le terminal:
+   `node -v`
+   `npm -v`
+
+### PREPARER L'ENVIRONNEMENT SOUS WINDOWS
+
+#### INSTALLER NODEJS
+1. Télécharger l'executeur d'installation node-vXX.XX.XX-linux-x64.msi(.exe)
+2. Lancer l'executeur d'installation
+3. Controler l'installation dans le terminal:
    `node -v`
    `npm -v`
 
@@ -225,7 +236,7 @@ Dans une requête HTTP, le **[header](https://developer.mozilla.org/fr/docs/Web/
 
 6. ajout de plusieurs paramètre ***accept*** dans le curl : `
 
-   ```curl -X GET localhost:8080 -H "accept:text/html, application/json"`
+   `curl -X GET localhost:8080 -H "accept:text/html, application/json"`
 
 7. résultat :
 
@@ -365,7 +376,7 @@ Les events sont la base de NodeJS, dans cet environnement d'execution non bloqua
 
 Les premier events souvent étudiés et utilisés sont ceux utilisés dans une page HTML (client side), on peut les attacher à un élément en utilisant :
 
-1. Un [Event attribute]((https://www.w3schools.com/tags/ref_eventattributes.asp) dans la balise HTML.
+1. Un [Event attribute](https://www.w3schools.com/tags/ref_eventattributes.asp) dans la balise HTML.
 2. La fonction [addEventListener()](https://www.w3schools.com/jsref/met_element_addeventlistener.asp) dans un script.
 
 ##### 1. Event Attribute :
@@ -483,9 +494,10 @@ server.listen(8080);
 ##### Exercice : le _close_ event
 
 > Lien utile:
->
+> * [message.url](https://nodejs.org/api/http.html#http_message_url)
 > * [http.close()](https://nodejs.org/api/http.html#http_server_close_callback)
 > * [http close Event](https://nodejs.org/api/http.html#http_server_close_callback)
+
 
 Ajoutons une fonction sur un autre event émis par http.Server, le [http Close Event](https://nodejs.org/api/http.html#http_event_close).
 A la reception d'une requete sur l'url ***/close*** notre serveur doit se fermee, afficher un message de cloture dans la console serveur et envoyer un message au client pour confirmer la fermeture.
@@ -611,7 +623,7 @@ fs.readFile('logfile', 'utf8', function(error, content)
 
 ##### Utilisation de fs.readFile() en version compacte ++
 
-Je peux utiliser la syntaxe ES6 : **fonction** disparait, remplacé par **=>**
+Je peux utiliser la syntaxe ES6 : **fonction** disparait, remplacée par **=>**
 
 ```javascript
 fs.readFile('logfile', 'utf8', (error, content)=>
@@ -844,6 +856,7 @@ function getOnlyLowerTen(nbr)
 console.log(getOnlyLowerTen(5));
 console.log(getOnlyLowerTen(12));
 ```
+
 
 ### EXERCICE ERROR
 
