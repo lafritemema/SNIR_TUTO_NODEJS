@@ -387,7 +387,7 @@ function onOut()
 </script>
 ```
 
-[Visu du résultat](./html_event.html){:target="_blank"}
+[Visu du résultat](./html_event.html)
 
 En déclarant l'[Event attribute](https://www.w3schools.com/tags/ref_eventattributes.asp) ***onmouseover*** sur l'élément HTML j'attache cet event à l'élément.
 La fonction passé en valeur de l'attribut est la fonction exécutée lorsque l'event est levé.
