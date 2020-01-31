@@ -729,6 +729,8 @@ La fonction qui parsera l'url devra prendre une fonction de callback en argument
 ###### [Une solution possible](./parse_url_exercice.js)
 
 ## LA GESTION DES EXCEPTIONS
+> Lien utile:
+> *[Gestion des erreur - W3S ](https://www.w3schools.com/js/js_errors.asp)
 
 Une exception est un évènement bien particulier qui va interrompre le programme si il n'est pas correctement géré.
 Donc la moindre petite exception non gérée peut supprimer l'accès au service pour les clients distants.
@@ -788,6 +790,63 @@ try{
 {
   //Code executé en cas d'erreur
   console.log("attention j'ai l'erreur suivant dans mon code "+e);
+}finally
+{
+  // ce bloc est executé dans les 2 cas.
+  console.log('fin du programme');
 }
-console.log('fin du programme');
+
 ```
+
+### LEVER UNE EXCEPTION AVEC THROW
+
+La commande **throw** nous permet de lever une exeption suivant nos besoins. Elle peut être utilisée n'importe où dans notre code.
+
+``` JavaScript
+function getOnlyLowerTen(nbr)
+{
+  if(nbr<10)
+  {
+    return 'Voici votre nombre :'+nbr;
+  }
+  else {
+    throw 'le nombre est superieur à 10'
+  }
+}
+
+console.log(getOnlyLowerTen(5));
+console.log(getOnlyLowerTen(12));
+```
+
+### TYPER SON EXCEPTION
+
+La commande throw nous permet également de renvoyer un objet Error ou toute variate héritant de cet objet.
+Variante de l'objet Error :
+* EvalError
+* RangeError
+* ReferenceError
+* SyntaxError
+* TypeError
+* URIError
+
+```Javascipt
+function getOnlyLowerTen(nbr)
+{
+  if(nbr<10)
+  {
+    return 'Voici votre nombre :'+nbr;
+  }
+  else {
+    throw new Error('le nombre est superieur à 10')
+  }
+}
+
+console.log(getOnlyLowerTen(5));
+console.log(getOnlyLowerTen(12));
+```
+
+### EXERCICE ERROR
+
+Nous allons modifier la fonction getOnlyLowerTen() pour typer l'erreur déjà émise et lever également une erreur typée si le paramètre n'est pas un nombre.
+Ensuite nous ferons un petit bout de code simple qui exécutera la fonction en gérant les éventuelles erreur levées.
+Cette fonction devra adapter son comportement en fonction du type d'erreur leve.
