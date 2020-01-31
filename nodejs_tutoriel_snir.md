@@ -99,7 +99,7 @@ response.end(answer); //envoi du résultat avec la variable answer dans le body
 ### PAGE HTML OU REST API
 
 > **Liens utiles (documentation Mozilla):**
-> 
+>
 > * [Status HTTP](https://developer.mozilla.org/fr/docs/Web/HTTP/Status)
 > * [Types MIME](https://developer.mozilla.org/fr/docs/Web/HTTP/Basics_of_HTTP/MIME_types)    
 
@@ -153,7 +153,7 @@ Pour adapter la réponse du serveur en fonction de la requête mais il faut trou
 **Comme souvent la réponse est dans la documentation !!**
 
 > Liens utiles (documentation NodeJS : module http):
-> 
+>
 > * [Function: http.createServer()](https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener)
 > * [Event: 'request'](https://nodejs.org/api/http.html#http_event_request)
 > * [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
@@ -183,7 +183,7 @@ Donc a partir de la documentation, je peux déduire que les informations qui me 
 #### Expérimentations :
 
 > Lien utile :
-> 
+>
 > * Documentation NodeJS :
 >   * [message.headers](https://nodejs.org/api/http.html#http_message_headers)
 >   * [message.url](https://nodejs.org/api/http.html#http_message_url)
@@ -224,7 +224,7 @@ Dans une requête HTTP, le **[header](https://developer.mozilla.org/fr/docs/Web/
 ```
 
 6. ajout de plusieurs paramètre ***accept*** dans le curl : `
-   
+
    ```curl -X GET localhost:8080 -H "accept:text/html, application/json"`
 
 7. résultat :
@@ -356,7 +356,7 @@ Les events sont la base de NodeJS, dans cet environnement d'execution non bloqua
 #### LES EVENTS CLIENT SIDE
 
 > Lien utiles:
-> 
+>
 > * [HTML Event attribute - W3S](https://www.w3schools.com/tags/ref_eventattributes.asp)
 > * [JavaScript Events - W3S](https://www.w3schools.com/js/js_events.asp)
 > * [HTML DOM Events - W3S](https://www.w3schools.com/jsref/dom_obj_event.asp)
@@ -370,21 +370,7 @@ Les premier events souvent étudiés et utilisés sont ceux utilisés dans une p
 
 ##### 1. Event Attribute :
 
-<p onmouseover="onOver()" onmouseout="onOut()" style="background-color:red;display:inline-block;padding:20px;color:white;font-weight:bold;cursor:pointer;">SURVOLER AVEC LA SOURIS</p>
-<p id="test_event" style="font-weight:bold;display:inline-block;"></p>
-
-<script>
- function onOver(msg)
- {
- document.getElementById("test_event").innerHTML = "==> SURVOL DE L'ELEMENT";
- }
- function onOut()
- {
- document.getElementById("test_event").innerHTML = "";
- }
-</script>
-
-Détail du code :
+Code :
 
 ```html
 <p onmouseover="onOver()" onmouseout="onOut()" style="background-color:red;display:inline-block;padding:20px;color:white;font-weight:bold;cursor:pointer;">SURVOLER AVEC LA SOURIS</p>
@@ -401,30 +387,15 @@ function onOut()
 </script>
 ```
 
+[Visu du résultat](./html_event.html){:target="_blank"}
+
 En déclarant l'[Event attribute](https://www.w3schools.com/tags/ref_eventattributes.asp) ***onmouseover*** sur l'élément HTML j'attache cet event à l'élément.
 La fonction passé en valeur de l'attribut est la fonction exécutée lorsque l'event est levé.
 Même fonctionnement pour l'attribut ***onmouseout***.
 
 ##### 2. La fonction ***addEventListener()***
 
-<p id="root_event_2" style="background-color:red;display:inline-block;padding:20px;color:white;font-weight:bold;cursor:pointer;">SURVOLER AVEC LA SOURIS</p>
-<p id="target_event_2" style="font-weight:bold;display:inline-block;"></p>
-<script>
-  function onOver2()
-  {
-    document.getElementById("target_event_2").innerHTML = "==> SURVOL DE L'ELEMENT";
-    console.log('error');
-  }
-  function onOut2()
-  {
-    document.getElementById("target_event_2").innerHTML = "";
-  }
-
-  document.getElementById("root_event_2").addEventListener('mouseenter', onOver2);
-  document.getElementById("root_event_2").addEventListener('mouseleave', onOut2);
-</script>
-
-Détail du code :
+Code:
 
 ```html
 <p id="root_event_2" style="background-color:red;display:inline-block;padding:20px;color:white;font-weight:bold;cursor:pointer;">SURVOLER AVEC LA SOURIS</p>
@@ -444,6 +415,8 @@ Détail du code :
   document.getElementById("root_event_2").addEventListener('mouseleave', onOut2);
 </script>
 ```
+
+[Visu du résultat](./html_event.html)
 
 Avec la methode [addEventListener()](https://www.w3schools.com/jsref/met_element_addeventlistener.asp) de l'objet [DOM Element](https://www.w3schools.com/JSREF/dom_obj_all.asp) réprésentant l'élément HTML avec l'id "root_event_2", j'attache le [DOM Event HTML](https://www.w3schools.com/jsref/dom_obj_event.asp) ***mouseenter*** à cet élément, lorsque cet event est levé, la fonction onOver2() est executée.
 Même fonctionnement pour l'attribut ***mouseleave***.
@@ -510,7 +483,7 @@ server.listen(8080);
 ##### Exercice : le _close_ event
 
 > Lien utile:
-> 
+>
 > * [http.close()](https://nodejs.org/api/http.html#http_server_close_callback)
 > * [http close Event](https://nodejs.org/api/http.html#http_server_close_callback)
 
@@ -545,7 +518,7 @@ Et enfin emmètre l'event dans mon code :
 ##### Exercice : créer un logger avec un event
 
 > Liens utiles :
-> 
+>
 > * [Events.EventEmitter()](https://nodejs.org/api/events.html#events_class_eventemitter)
 > * [fs.appendFile()](https://nodejs.org/api/fs.html#fs_fs_appendfile_path_data_options_callback)
 > * [HTTP Forbidden Status](https://developer.mozilla.org/fr/docs/Web/HTTP/Status/403)
@@ -565,13 +538,13 @@ J'ai besoin de 2 types de messages minimum:
 Une ***fonction de callback*** est une fonction _(fille)_ passée en paramêtre d'une autre fonction _(mère)_ pour être appelé à la fin de son exécution.
 Ce système de _callback_ permet :
 
-1. d'executer une action à la fin d'une fonction "longue" pour agir sur son résultat 
+1. d'executer une action à la fin d'une fonction "longue" pour agir sur son résultat
 2. d'élaborer des fonctions acceptant des fonction anonymes pour une plus grande modularité.
 
 #### 1. Fonction asynchrone : lecture de fichier
 
 > Lien utile :
-> 
+>
 > * [fs.readFile()](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback)
 
 ##### Lecture de la documentation
@@ -581,7 +554,7 @@ Ce système de _callback_ permet :
 Dans la liste des parametres de la fonction asynchrone **readFile()** de **fs** un argument **callback** représentant une fonction est identifié.
 2 paramêtres sont passés en arguments de cette fonction, ils représentent des données definies pendant l'execution de la fonction **readFile** :
 
-* Error : erreur levé pendant la lecture du fichier, null si pas d'erreur identifiée 
+* Error : erreur levé pendant la lecture du fichier, null si pas d'erreur identifiée
 * String|Buffer : contenu du fichier.
 
 La fonction de callback que l'on va passé en argument va nous permettre de récupérer et d'agir sur ces données.
@@ -680,7 +653,7 @@ function(el)
 ```javascript
 const EventEmitter = require('events').EventEmitter;
 var myeventEmitter = new EventEmitter();`
-myeventEmit.on('event1', 
+myeventEmit.on('event1',
 //fonction de callback
 function(message)
 {
@@ -732,7 +705,7 @@ toObj(a, function(error, obj){
 #### Exercice : parser un url
 
 > Liens utiles :
-> 
+>
 > * [Documentation Expression Reguliere](https://developer.mozilla.org/fr/docs/Web/JavaScript/Guide/Expressions_r%C3%A9guli%C3%A8res)
 > * [Documentation RegEx](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/RegExp)
 > * [Documentation Array](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array)
@@ -789,5 +762,3 @@ console.log(oj.prenom);
 TypeError: Cannot read property 'prenom' of null
 ...
 ```
-
-

@@ -1,0 +1,35 @@
+
+<h3>Event Attibute<h3>
+
+<p onmouseover="onOver()" onmouseout="onOut()" style="background-color:red;display:inline-block;padding:20px;color:white;font-weight:bold;cursor:pointer;">SURVOLER AVEC LA SOURIS</p>
+<p id="test_event" style="font-weight:bold;display:inline-block;"></p>
+
+<script>
+ function onOver(msg)
+ {
+ document.getElementById("test_event").innerHTML = "==> SURVOL DE L'ELEMENT";
+ }
+ function onOut()
+ {
+ document.getElementById("test_event").innerHTML = "";
+ }
+</script>
+
+<h3>La fonction addEventListener()<h3>
+
+<p id="root_event_2" style="background-color:red;display:inline-block;padding:20px;color:white;font-weight:bold;cursor:pointer;">SURVOLER AVEC LA SOURIS</p>
+<p id="target_event_2" style="font-weight:bold;display:inline-block;"></p>
+<script>
+  function onOver2()
+  {
+    document.getElementById("target_event_2").innerHTML = "==> SURVOL DE L'ELEMENT";
+    console.log('error');
+  }
+  function onOut2()
+  {
+    document.getElementById("target_event_2").innerHTML = "";
+  }
+
+  document.getElementById("root_event_2").addEventListener('mouseenter', onOver2);
+  document.getElementById("root_event_2").addEventListener('mouseleave', onOut2);
+</script>
