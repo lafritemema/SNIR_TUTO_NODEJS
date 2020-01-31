@@ -749,6 +749,7 @@ var asw = owk.eleve;
 console.log(asw.prenom);
 var oj = asw.eleve;
 console.log(oj.prenom);
+console.log('fin du programme');
 ```
 
 Nous obtenons :
@@ -761,4 +762,32 @@ console.log(oj.prenom);
 
 TypeError: Cannot read property 'prenom' of null
 ...
+```
+
+### LE BLOCK TRY/CATCH
+
+Le bloc try/catch nous permet de récupérer les exceptions levée pendant l'execution du code et de réagir en fonction.
+
+```JavaScript
+var owk = {'prenom':'Obi-Wan',
+                'nom':'Kenobi',
+                'profession':'Maitre Jedi',
+                'eleve':{
+                    'prenom':'Anakin',
+                    'nom':'Skywalker',
+                    'profession':'Jedi',
+                    'eleve':null}
+            };
+try{
+  //mon code qui peut éventuellement lever une erreur
+  var asw = owk.eleve;
+  console.log(asw.prenom);
+  var oj = asw.eleve;
+  console.log(oj.prenom);
+}catch(e)
+{
+  //Code executé en cas d'erreur
+  console.log("attention j'ai l'erreur suivant dans mon code "+e);
+}
+console.log('fin du programme');
 ```
