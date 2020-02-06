@@ -19,12 +19,12 @@ Ce qui fait la performance de NodeJS :
 
 Au lien suivant, télécharger le Current : https://nodejs.org/en/
 
-### 1. PREPARER L'ENVIRONNEMENT SOUS LINUX
+### PREPARER L'ENVIRONNEMENT SOUS LINUX
 
 #### INSTALLER NODEJS (en manuel)
-Dans le terminal :
 
 1. Telecharger l'archive node-vXX.XX.XX-linux-x64.tar.xz
+Dans le terminal :
 2. Décompresser l'archive:
    `tar -xGf node-vXX.XX.XX-linux-x64.tar.xz`
 3. Se positionner dans le dossier node:
@@ -44,12 +44,17 @@ Dans le terminal :
    `node -v`
    `npm -v`
 
-### 2. Commandes disponible :
+#### INSTALLER CURL
+1. Télécharger [CURL pour Windows](https://curl.haxx.se/windows/dl-7.68.0/curl-7.68.0-win64-mingw.zip)
+2. Décompresser l'archive dans le dossier de votre choix.
+3. Ajouter le lien vers le dossier dans le PATH (variable d'environnement...).
+
+### COMMANDE NODEJS DISPONIBLES
 
 * node => **Moteur d'execution Javascript**
 * npm => **Gestionnaire de paquet NodeJS**
 
-### 3. MISE A JOUR NODEJS / ADMINISTRATION
+### MISE A JOUR NODEJS/ADMINISTRATION
 
 Pour la mise à jour de NodeJS perso j'utilise le module ***n*** (Node version management [tj/n sur GitHub](https://github.com/tj/n)):
 
@@ -776,21 +781,22 @@ console.log(oj.prenom);
 
 TypeError: Cannot read property 'prenom' of null
 ...
+
 ```
 
 ### LE BLOCK TRY/CATCH
 
-Le bloc try/catch nous permet de récupérer les exceptions levée pendant l'execution du code et de réagir en fonction.
+Le bloc try/catch nous permet de récupérer les exceptions levée pendant l'execution' du code et de réagir en fonction.
 
-```JavaScript
+``` javascript
 var owk = {'prenom':'Obi-Wan',
-                'nom':'Kenobi',
+                'nom': 'Kenobi',
                 'profession':'Maitre Jedi',
                 'eleve':{
                     'prenom':'Anakin',
                     'nom':'Skywalker',
                     'profession':'Jedi',
-                    'eleve':null}
+                    'eleve': null}
             };
 try{
   //mon code qui peut éventuellement lever une erreur
@@ -801,7 +807,7 @@ try{
 }catch(e)
 {
   //Code executé en cas d'erreur
-  console.log("attention j'ai l'erreur suivant dans mon code "+e);
+  console.log("attention erreur suivante dans mon code "+e);
 }finally
 {
   // ce bloc est executé dans les 2 cas.
@@ -857,9 +863,19 @@ console.log(getOnlyLowerTen(5));
 console.log(getOnlyLowerTen(12));
 ```
 
-
 ### EXERCICE ERROR
 
 Nous allons modifier la fonction getOnlyLowerTen() pour typer l'erreur déjà émise et lever également une erreur typée si le paramètre n'est pas un nombre.
-Ensuite nous ferons un petit bout de code simple qui exécutera la fonction en gérant les éventuelles erreur levées.
-Cette fonction devra adapter son comportement en fonction du type d'erreur leve.
+Ensuite nous préparerons un code simple qui exécutera la fonction en gérant les éventuelles erreurs levées.
+Cette fonction devra adapter son comportement en fonction du type d'erreur levée.
+
+## LES OBJETS DANS JAVASCRIPT
+
+Dans l'environnement Javascript, voici les principales formulations pour définir un objet:
+
+```javaScript
+
+function
+
+
+```

@@ -1,0 +1,31 @@
+{
+  "name": "snir_tuto_project",
+  "version": "1.0.0",
+  "description": "projet de démonstration pour le BTS SNIR",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lafritemema/SNIR_TUTO_NODEJS.git"
+  },
+  "keywords": [
+    "BTS",
+    "SNIR",
+    "tutoriel",
+    "express",
+    "ejs",
+    "nodejs",
+    "npm"
+  ],
+  "author": "lafritemema",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lafritemema/SNIR_TUTO_NODEJS/issues"
+  },
+  "homepage": "https://github.com/lafritemema/SNIR_TUTO_NODEJS#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
