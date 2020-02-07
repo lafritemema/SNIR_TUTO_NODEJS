@@ -135,3 +135,482 @@ Mais installer tous les modules 1 par 1 ne serait pas très efficaces, on préf�
 `npm install`
 
 Cette commande va lire le fichier package.json, récupérer la liste des dépendances contenues dans l'attribut _dependencies_ et les installer 1 par 1.
+
+### LE MODULE EXPRESS
+> Lien utile :
+> * [Documentation Express](https://expressjs.com/en/4x/api.html)
+
+Comme présenté lors de son installation, le module **express** est un module très utilisé dans NodeJS. C'est un mini-framework qui va simplifier énormément plusieurs fonctions déjà codés dans le [tutoriel précédent](./nodejs_tutoriel_snir.md).
+Mais comme tous les modules de NodeJS, express s'
+
+#### PREMIER SERVEUR EXPRESS
+
+Pour illustrer le fonctionnement de express, reprenons un code déjà vu précédement :
+
+```javascript
+var server = http.createServer(function(request,response)
+{
+  var answer = '';
+  //je recupere l'url via l'objet message.url
+  var url = request.url;
+
+  // j'utilise une structure conditionnelle switch pour adapter la réponse à l'url
+  switch(url)
+  {
+    //si l'url == index je renvoi du html
+    case '/web/liste':
+      response.writeHead(200, {"Content-Type": "text/html"});
+      answer = `<!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+    '     <title>Liste de courses</title>
+        </head>
+        <body>
+          <p>Liste de courses :
+          <ul>
+            <li>PAIN</li>
+            <li>FRUITS</li>
+            <li>LEGUMES</li>
+          </ul>
+          </p>
+        </body>
+      </html>`
+      break;
+    // si l'url == /api/list je renvoi du json
+    case '/api/liste':
+      response.writeHead(200, {"Content-Type": "application/json"});
+      answer = JSON.stringify({"courses" : ["PAIN", "FRUITS", "LEGUMES"]});
+      break;
+    // si l'url ne correspond a aucun des 2 il envoi un code 404
+    default:
+      response.writeHead(404);
+  }
+  response.end(answer);
+});
+```
+
+Ce code nous permettait de d'identifier l'url dans la requête du client est de renvoyer une réponse adaptée à sa demande.
+
+Voici la fonction équivalente en utilisant **express**:
+
+```javascript
+
+var express = require('express'); //import du module express
+var app = express(); // j'instancie un objet express.Application en utilisant la fonction express();
+
+//puis je peux utiliser les fonction de l'objet pour récupérer les requetes clients
+
+app.get('/web/liste', function(request, response) {
+    //fonction executé lors d'une requete de type get sur l'url /index
+    response.setHeader("Content-Type","text/html");
+    answer = `<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Liste de courses</title>
+      </head>
+      <body>
+        <p>Liste de courses :
+        <ul>
+          <li>PAIN</li>
+          <li>FRUITS</li>
+          <li>LEGUMES</li>
+        </ul>
+        </p>
+      </body>
+    </html>`
+
+    response.status(200).send(answer);
+});
+
+app.get('/api/liste', function(request, response)
+{
+  //fonction executée lors d'une requete de type get sur l'url /api/list
+  response.setHeader("Content-Type","application/json");
+  answer = JSON.stringify({"courses" : ["PAIN", "FRUITS", "LEGUMES"]});
+  response.status(200).send(answer);
+});
+
+//Attention le app.use general renvoyant l'erreur est positionne à la fin
+app.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page non trouvée');
+});
+
+app.listen(8080); //j'écoute sur le port 8080
+```
+
+**Attention**:
+Malgrès une grand similitude entre les 2 solutions, on remarque quelques changement au niveau des méthode utilisée par l'objet ***response***:
+* _writeHead()_ devient _setHeader()_.
+* une methode _status()_ apparait.
+
+Normal !! L'object ***response*** passé en paramètre de la fonction de callback n'est pas un objet [http.ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) mais un objet [Express.Response](https://expressjs.com/en/4x/api.html#res), il possède donc des paramètres et des méthode qui lui sont propre.
+
+Évidemment l'objet ***request*** n'est pas un objet [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) mais un objet [Express.Request](https://expressjs.com/en/4x/api.html#req)
+
+### HTTP DOPE A L'EXPRESS
+
+Express ne vient pas remplacer le module natif **http** , c'est plutôt un gestionnaire que l'on utilise pour récupérer (via ***http.IncomingMessage***) et transmettre (***http.ServerResponse***) des informations de/vers **http**.
+Express permet à l'utilisateur (développeur) de manipuler ces informations plus rapidement et facilement.
+
+Concrètement le code suivant :
+
+```javaScript
+var express = require('express');
+var app = express();
+...
+app.listen(8080);
+```
+
+Est une version comprimée de :
+
+```javaScript
+var express = require('express');
+var app = express();
+var http = require('http');
+http.createServer(app).listen(8080);
+```
+
+### LE ROUTING AVEC EXPRESS
+
+Comme vu précédement le express nous permet de gérer le routing via la fonction **[get()](https://expressjs.com/en/4x/api.html#app.get)** de son objet **[Application](https://expressjs.com/en/4x/api.html#app)**
+
+#### PREMIER EXEMPLE DE ROUTING
+
+```javascript
+var express = require('express');
+var app = express();
+
+app.get('/batiment/accueil', function(request, response)
+{
+  //fonction executée lors d'une requete de type get sur l'url /api/list
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL</h1>
+      <ul>
+        <li><a href="/etage1">étage 1</a></li>
+        <li><a href="/etage2">étage 2</a></li>
+      </ul>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.get('/batiment/etage1', function(request, response)
+{
+  //fonction executée lors d'une requete de type get sur l'url /api/list
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Etage 1</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE ETAGE 1</h1>
+      <ul>
+        <li><a href="/etage1/bureau1">bureau 1</a></li>
+        <li><a href="/etage1/bureau2">bureau 2</a></li>
+      </ul>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.get('/batiment/etage2', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Etage 2</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE ETAGE 1</h1>
+      <ul>
+        <li><a href="/etage2/bureau1">bureau 1</a></li>
+        <li><a href="/etage2/bureau2">bureau 2</a></li>
+      </ul>
+    </body>
+  </html>`;
+
+  response.status(200).send(answer);
+})
+.get('/batiment/etage1/bureau1', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Etage 1 Bureau 1</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE ETAGE 1 BUREAU 1</h1>
+    </body>
+  </html>`;
+
+  response.status(200).send(answer);
+})
+.use('/batiment/etage1', function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send("Page sur l'étage 1 non trouvé");
+})
+.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page inexistante');
+})
+.listen(8080);
+```
+
+#### EXERCICE ROUTES STATIQUES
+
+Ajoutons au code ci-dessus un code nous permettant de renvoyer une page décrivant le bureau 1 de l'étage 2.
+Ajoutons également un code qui nous renvoi un status erreur si un url de l'étage 2 n'est pas reconnu.
+
+###### [Solution possible](./projet/express_routing_simple.js)
+
+#### LES ROUTES DYNAMIQUES
+
+Sur l'exemple ci dessous on observe beaucoup de code en double. Pour ce type d'application on préférera les routes dynamiques aux routes statiques.
+
+Le routes dynamique sont formulés de la façon suivante :
+`/batiment/etage/:etageNum`
+
+La variable est identifiée sous la forme ***:etageNum***. Elle est disponibles dans notre code via l'attribut ***[params](https://expressjs.com/en/4x/api.html#req.params)*** de l'objet [Express.Request](https://expressjs.com/en/4x/api.html#req) sous la forme suivante:
+`request.params.etageNum`
+
+##### EXEMPLE DE ROUTES DYNAMIQUES
+
+```JavaScript
+var express = require('express');
+var app = express();
+
+app.get('/batiment/accueil', function(request, response)
+{
+  //fonction executée lors d'une requete de type get sur l'url /api/list
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL</h1>
+      <ul>
+        <li><a href="/batiment/etage/1">étage 1</a></li>
+        <li><a href="/batiment/etage/2">étage 2</a></li>
+      </ul>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.get('/batiment/etage/:etageNum', function(request, response)
+{
+  //fonction executée lors d'une requete de type get sur l'url /api/list
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Etage ${request.params.etageNum}</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE ETAGE ${request.params.etageNum}</h1>
+      <ul>
+        <li><a href="batiment/etage/1/bureau/1">bureau 1</a></li>
+        <li><a href="batiment/etage/1/bureau/2">bureau 2</a></li>
+      </ul>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.listen(8080)
+```
+
+##### EXERCICE ROUTES DYNAMIQUES
+
+Ajoutons une fonction renvoyant une page décrivant les bureaux 1 et 2 des étages 1 et 2.
+Ajoutons également une fonction renvoyant un message avec status 404 personnalisé pour les url étage 1 et 2.
+Et enfin une fonction renvoyant un message d'erreur pour tous les autres url.
+
+[Une solution possible](./projet/express_routing_dynamique.js)
+
+#### LES ROUTES MULTIPLES
+
+Avec l'augmentation de la taille de l'application, le nombre de routes statiques ou dynamiques peut vite devenir compliqué à gérer/modifier.
+L'utilisation de l'objet [Express.Router](https://expressjs.com/en/4x/api.html#router) permet de gérer plus facilement ces situations.
+
+Le principe consiste à créer plusieurs Router qui vont chacun gérer une racine d’itinéraire.
+
+##### EXEMPLE DE ROUTE MULTIPLES
+
+```JavaScript
+var express = require('express');
+
+//Je prépare mes objets Router
+// L'objet Router pour la racine user
+var router_user = new express.Router();
+router_user.get('/', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL DE LA PARTIE USER</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.get('/about', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOICI UNE PETITE DESCRIPTION DE LA PARTIE USER</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+});
+
+// l'objet Router pour la partie admin
+var router_admin = new express.Router();
+router_admin.get('/', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL DE LA PARTIE ADMIN</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.get('/about', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOICI UNE PETITE DESCRIPTION DE LA PARTIE ADMIN</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+});
+
+var app = express();
+
+app.use('/users', router_user);
+app.use('/admin', router_admin);
+
+app.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page inexistante');
+});
+
+app.listen('8080');
+
+```
+##### EXERCICE ROUTES MULTIPLES
+
+Ajoutons une interface pour les utilisateurs avancés sur la racine '/ad_user'.
+Et une réponse d'erreur personnalisée pour chaque racine.
+
+###### [Une solution possible](./projet/express_routing_dynamique.js)
+
+#### ROUTES MULTIPLES + MODULES
+
+Bon les routes multiples sont une bonne méthode pour déléguer une partie du routage à un autre élément mais tel qu'utilisé ci-dessus elle n'épure pas vraiment le code de notre serveur...
+**Il faut optimiser notre façon de l'utiliser en encapsulant nos Router dans des modules**
+
+##### CREER UN ROUTER ENCAPSULÉ
+
+1. Je crée un dossier **app_modules**
+`mkdir app_modules`
+
+2. Je créé un dossier **router** dans **app_modules**
+`cd app_modules | mkdir router`
+
+3. Je créé un fichier **user_router.js** dans **router**
+`cd router | touch user_router.js`
+
+4. J'intègre le code suivant dans mon fichier **user_router.js**
+
+```javaScript
+
+var router = require('express').Router
+
+var router_user = new router();
+router_user.get('/', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL DE LA PARTIE USER</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+.get('/about', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOICI UNE PETITE DESCRIPTION DE LA PARTIE USER</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+});
+
+modules.exports = router_user
+```
+5. j'import ce module fraichement créé dans mon code
+
+```javascript
+var app = express();
+
+app.use('/users', require('./app_modules/router/user_router'));
+
+app.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page inexistante');
+});
+
+app.listen('8080');
+
+```
