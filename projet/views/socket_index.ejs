@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>PAGE TEST SOCKET</title>
+    <!-- je declare le lien vers la librarie socket.io client  -->
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>VOICI LA PAGE DE TEST DES SOCKETS</h1>
+    <h2>Client <%= client %></h2>
+    <button onclick="clickOn()">BUTTON</button>
+    <div id="msgbox">
+    </div>
+    <script>
+      var socket = io.connect('http://localhost:<%= port %>')
+      var client = <%= client %>;
+      function clickOn()
+      {
+        socket.emit('newclick', client);
+      }
+
+      socket.on('clickreceived', function(message)
+      {
+        var htmlmsg = `<p>${message}</p>`
+        document.getElementById('msgbox').innerHTML = document.getElementById('msgbox').innerHTML + htmlmsg
+      });
+    </script>
+  </body>
+</html>

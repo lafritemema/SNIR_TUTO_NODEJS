@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>accueil</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.1.0/dist/alpine.min.js"></script>
+  </head>
+  <body>
+    <h1>VOICI LA PAGE DE TEST DES SOCKETS</h1>
+    <div x-data="{listEl:null, mymsg:''}"
+      x-init="
+      listEl = [];
+      socket = io.connect('http://localhost:<%= port %>');
+
+      socket.on('msgsend', function(message)
+      {
+        listEl.push({'msg':message, 'otm':true});
+        $refs.momo.scrollTo(0,$refs.chatscreen.scrollHeight);
+      });
+
+      sendMsg = function(message)
+      {
+        listEl.push({'msg':message, 'otm':false})
+        socket.emit('newmsg', message);
+        cleanInput();
+        $refs.chatscreen.scrollTo(0,$refs.chatscreen.scrollHeight);
+      }
+
+      cleanInput = function()
+      {
+        mymsg = '';
+      }
+
+      " @keydown.enter="sendMsg(mymsg)">
+       <div id="chatscreen" x-ref="chatscreen">
+         <template x-id="momo" x-for="el in listEl">
+           <div :class="{'otm':el.otm}">
+             <p x-text="el.msg"></p>
+           </div>
+        </template>
+        <p>FIN</p>
+      </div>
+       <input x-model="mymsg">
+        <button @click="sendMsg(mymsg)">ENVOYER</button>
+    </div>
+    <style>
+
+      #chatscreen
+      {
+        width:60%;
+        border:1px solid blue;
+        height:500px;
+
+        overflow-y: scroll;
+      }
+      input
+      {
+        width:40%;
+      }
+
+      button
+      {
+        width:20%;
+      }
+
+      p{
+        display: inline-block;
+        padding: 20px;
+        border:2px solid black;
+        margin:3px;
+      }
+
+      .otm
+      {
+        text-align:right;
+      }
+
+      .otm p
+      {
+        background-color: grey;
+        color:white;
+      }
+    </style>
+  </body>
+</html>

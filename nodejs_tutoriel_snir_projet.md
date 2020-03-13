@@ -202,7 +202,7 @@ var app = express(); // j'instancie un objet express.Application en utilisant la
 //puis je peux utiliser les fonction de l'objet pour récupérer les requetes clients
 
 app.get('/web/liste', function(request, response) {
-    //fonction executé lors d'une requete de type get sur l'url /index
+
     response.setHeader("Content-Type","text/html");
     answer = `<!DOCTYPE html>
     <html>
@@ -285,7 +285,6 @@ var app = express();
 
 app.get('/batiment/accueil', function(request, response)
 {
-  //fonction executée lors d'une requete de type get sur l'url /api/list
   response.setHeader("Content-Type","text/html");
   answer = `<!DOCTYPE html>
   <html>
@@ -305,7 +304,6 @@ app.get('/batiment/accueil', function(request, response)
 })
 .get('/batiment/etage1', function(request, response)
 {
-  //fonction executée lors d'une requete de type get sur l'url /api/list
   response.setHeader("Content-Type","text/html");
   answer = `<!DOCTYPE html>
   <html>
@@ -395,7 +393,6 @@ var app = express();
 
 app.get('/batiment/accueil', function(request, response)
 {
-  //fonction executée lors d'une requete de type get sur l'url /api/list
   response.setHeader("Content-Type","text/html");
   answer = `<!DOCTYPE html>
   <html>
@@ -415,7 +412,6 @@ app.get('/batiment/accueil', function(request, response)
 })
 .get('/batiment/etage/:etageNum', function(request, response)
 {
-  //fonction executée lors d'une requete de type get sur l'url /api/list
   response.setHeader("Content-Type","text/html");
   answer = `<!DOCTYPE html>
   <html>
@@ -599,12 +595,15 @@ router_user.get('/', function(request, response)
 
 modules.exports = router_user
 ```
-5. j'import ce module fraichement créé dans mon code
+5. et j'importe ce module fraîchement créé dans le code suivant pour l'utiliser
 
 ```javascript
+var express = require('express');
 var app = express();
 
+//utilisation du module user_router pour traiter les requête de la racine /users
 app.use('/users', require('./app_modules/router/user_router'));
+
 
 app.use(function(request, response, next){
     response.setHeader('Content-Type', 'text/plain');
@@ -613,4 +612,273 @@ app.use(function(request, response, next){
 
 app.listen('8080');
 
+```
+
+##### EXERCICE ROUTER ENCAPSULÉ
+
+Créons un routeur ***admin_router.js*** et utilisons le pour traiter les requêtes passé sur la racine ***/admin***.
+
+###### [Une solution possible](/projet/express_router_module.js)
+
+#### EXPRESS ET LES MIDDLEWARES
+
+Express est un framework basé sur le concept de **MIDDLEWARES**.
+Chaque middleware est une micro-application qui assure une fonctionnalité précise.
+
+Ces middlewares sont chargés sur le module de base Express pour augmenter ses fonctionnalités.
+La version actuelle d'Express est déjà fourni avec plusieurs middleware et une multitude d'autre sont installable via npm.
+
+##### LES TEMPLATES HTML
+
+Express nous permet également, via un middleware de notre choix de créer des pages dynamique sur la base d'un template.
+Plusieurs "view engines" existent : jade/pug, ejs, Handlebars ...; Chaque module a sa syntaxe propre mais le fonctionnement généralement reste similaire :
+l'injection de variables dans un template existant.
+
+###### UTILISER UN TEMPLATE
+
+1. installer les engine viewer ejs et pug :
+
+```shell
+npm install ejs
+npm install pug
+```
+
+2. Créer un dossier ***views*** à la racine du projet.
+3. Créer un fichier ***template.ejs*** dans le dossier ***views*** et y intégrer un code html :
+
+```html
+<html>
+  <head>
+    <title>Template</title>
+  </head>
+  <body>
+    <h1>VOICI MON TEMPLATE EJS</h1>
+    <p>Voici un mon premier template avec le middleware <b>ejs</b> pour le moment je n'ai que du contenu statique.</p>
+  </body>
+</html>
+```
+4. Créer un fichier ***main.js*** et y ajouter le code suivant:
+
+```javaScript
+var express = require('express');
+var app = express();
+
+//app.set('view engine', 'ejs');
+//app.set('views', './views');
+
+app.get('/accueil', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  response.status(200).render('template.ejs',null);
+})
+.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page inexistante');
+})
+.listen(8080);
+```
+
+Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension su fichier de template mais on peut modifier ces paramêtres via la methode **set** de **app**:
+* Modification du path : `app.set('views', './path/to/views')`
+* Modification du viewer engine : `app.set('view engine', 'ejs')`
+
+5. Creer un fichier ***template.pug*** :
+
+```pug
+html
+head
+  title TEMPLATE
+body
+  h1 VOICI MON TEMPLATE PUG
+  p Voici un mon premier template avec le middleware <b>pug</b> pour le moment je n'ai que du contenu statique.
+```
+6. Et modifier le ***main.js***:
+
+```javaScript
+var express = require('express');
+var app = express();
+
+app.set('view engine', 'pug');
+//app.set('view engine', 'ejs');
+//app.set('views', './views');
+
+app.get('/accueil', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  response.status(200).render('template',null);
+})
+.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page inexistante');
+})
+.listen(8080);
+```
+
+###### INJECTION DE VARIABLES
+
+L'avantage des templates réside dans la possibilité d'injecter des variables au milieu de notre code html ou d'utiliser un script pour le générer du contenu de façon dynamique.
+
+Reprenons l'exemple utilisé pour le routing en mode template
+
+1. Création d'un dossier ***project_views***.
+
+2. Création du fichier template ***accueil.ejs*** dans ***project_views***:
+
+```HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>accueil</title>
+  </head>
+  <body>
+    <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL</h1>
+    <ul>
+      <!-- j'utilise une boucle for pour generer une liste avec "num_etage" éléments-->
+      <% for (var i of new Array(num_etage).keys())
+      { %>
+        <li><a href="/batiment/etage/<%= i %>">étage <%= i %></a></li>
+      <% } %>
+      <!-- fin de la boucle -->
+    </ul>
+  </body>
+</html>
+```
+
+3. Creation du template ***etage.ejs*** dans ***project_views***:
+
+```HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Etage <%= etage %></title>
+  </head>
+  <body>
+    <!-- j'insert une variable etage dans le template -->
+    <h1>VOUS ÊTES SUR LA PAGE ETAGE <%= etage %></h1>
+    <ul>
+      <li><a href="batiment/etage/1/bureau/1">bureau 1</a></li>
+      <li><a href="batiment/etage/1/bureau/2">bureau 2</a></li>
+    </ul>
+  </body>
+</html>
+```
+
+4. Création du script ***main.js*** à la racine du projet:
+
+```JavaScript
+var express = require('express');
+var app = express();
+
+// je parametre le view engine et le path vers les templates
+app.set('view engine', 'ejs');
+app.set('views', './project_views');
+
+
+app.get('/batiment/accueil', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  //j'utilise la methode render() de express.response pour generer le code HTML à partir du template accueil.ejs en injectant une variable num_etage
+  response.status(200).render('accueil',{num_etage:4});
+})
+.get('/batiment/etage/:etageNum', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  response.status(200).render('etage',{'etage':request.params.etageNum});
+})
+.use(function(request, response, next){
+    response.setHeader('Content-Type', 'text/plain');
+    response.status(404).send('Page inexistante');
+})
+.listen(8080);
+
+```
+
+### LE MODULE SOCKET.IO
+
+**socket.io** est un module NodeJS permettant une communication temps réelle entre le client et le serveur.
+Elle s'appui principalement sur la technologie [Websocket](https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API), une API permettant une communication bidirectionnelle entre le client et le serveur.
+
+Le système est divisé en 2 modules :
+  1. un coté client
+  2. un coté serveur
+
+1. Coté serveur :
+
+```javascript
+var http = require('http');
+var express = require('express');
+var app = express();
+var port = 8080;
+
+//declaration du serveur
+var server = http.createServer(app);
+
+//declaration d'un objet socket.io à l'ecoute de notre serveur http
+var io = require('socket.io').listen(server);
+//une variable pour identifier les client
+var client = 0;
+// un .get() pour récupérer les requetes
+app.get('/', function(request, response)
+{
+  //envoi de la réponse => template socket_index.ejs
+  //dans lequel j'injecte la valeur port et client
+  client++;
+  response.render('socket_index.ejs', {port:port, client:client});
+});
+
+//instantation de la connexion lors de la requete client
+io.sockets.on('connection', function (socket) {
+    //l'objet socket represente la connexion websocket avec le client
+    //j'affiche un message
+    console.log('Un nouveau client est connecté !');
+
+    //lorsque socket leve l'event newclick j'execute la fonction en callback
+    socket.on('newclick', function(client)
+    {
+      //j'affiche un message identifiant l'action client
+      console.log("click send by "+client);
+      //je leve l'event clickreceived pour alerter tous les client avec le message "click send by xxx"
+      io.emit('clickreceived', "click send by "+client);
+    });
+
+});
+
+server.listen(port);
+```
+
+2. Coté client:
+
+```HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>PAGE TEST SOCKET</title>
+    <!-- je declare le lien vers la librarie socket.io client  -->
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>VOICI LA PAGE DE TEST DES SOCKETS</h1>
+    <h2>Client <%= client %></h2>
+    <button onclick="clickOn()">BUTTON</button>
+    <div id="msgbox">
+    </div>
+    <script>
+      var socket = io.connect('http://localhost:<%= port %>')
+      var client = <%= client %>;
+      function clickOn()
+      {
+        socket.emit('newclick', client);
+      }
+
+      socket.on('clickreceived', function(message)
+      {
+        var htmlmsg = `<p>${message}</p>`
+        document.getElementById('msgbox').innerHTML = document.getElementById('msgbox').innerHTML + htmlmsg
+      });
+    </script>
+  </body>
+</html>
 ```

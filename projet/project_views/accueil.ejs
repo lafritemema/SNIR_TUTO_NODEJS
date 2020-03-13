@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>accueil</title>
+  </head>
+  <body>
+    <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL</h1>
+    <ul>
+      <% for (var i of new Array(num_etage).keys())
+         { %>
+        <li><a href="/batiment/etage/<%= i %>">étage <%= i %></a></li>
+      <% } %>
+    </ul>
+  </body>
+</html>
