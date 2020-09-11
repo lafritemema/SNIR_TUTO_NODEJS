@@ -89,7 +89,7 @@ De plus NodeJS est monothread (un seul processus à la fois), mais son coté ori
  //j'importe la librairie http
  var http = require('http');
 
-/je créé mon serveur
+ //je créé mon serveur
  var server = http.createServer(function(request,response)
  {
  //ENVOI TEXTE
