@@ -868,14 +868,3 @@ console.log(getOnlyLowerTen(12));
 Nous allons modifier la fonction getOnlyLowerTen() pour typer l'erreur déjà émise et lever également une erreur typée si le paramètre n'est pas un nombre.
 Ensuite nous préparerons un code simple qui exécutera la fonction en gérant les éventuelles erreurs levées.
 Cette fonction devra adapter son comportement en fonction du type d'erreur levée.
-
-## LES OBJETS DANS JAVASCRIPT
-
-Dans l'environnement Javascript, voici les principales formulations pour définir un objet:
-
-```javaScript
-
-function
-
-
-```
