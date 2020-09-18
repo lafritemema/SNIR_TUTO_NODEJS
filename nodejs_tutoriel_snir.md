@@ -745,14 +745,14 @@ La fonction qui parsera l'url devra prendre une fonction de callback en argument
 
 ###### [Une solution possible](./parse_url_exercice.js)
 
-## LA GESTION DES EXCEPTIONS
+## LA GESTION DES ERREURS
 > Lien utile:
 > *[Gestion des erreur - W3S ](https://www.w3schools.com/js/js_errors.asp)
 
 Une exception est un évènement bien particulier qui va interrompre le programme si il n'est pas correctement géré.
 Donc la moindre petite exception non gérée peut supprimer l'accès au service pour les clients distants.
 
-### LEVONS UNE EXCEPTION
+### LEVONS UNE ERREUR
 
 ```javascript
 var owk = {'prenom':'Obi-Wan',
@@ -786,7 +786,7 @@ TypeError: Cannot read property 'prenom' of null
 
 ### LE BLOCK TRY/CATCH
 
-Le bloc try/catch nous permet de récupérer les exceptions levée pendant l'execution' du code et de réagir en fonction.
+Le bloc try/catch nous permet de récupérer les erreurs levée pendant l'execution' du code et de réagir en fonction.
 
 ``` javascript
 var owk = {'prenom':'Obi-Wan',
@@ -816,7 +816,7 @@ try{
 
 ```
 
-### LEVER UNE EXCEPTION AVEC THROW
+### LEVER UNE ERREUR PERSO (EXCEPTION) AVEC THROW
 
 La commande **throw** nous permet de lever une exeption suivant nos besoins. Elle peut être utilisée n'importe où dans notre code.
 
@@ -863,8 +863,9 @@ console.log(getOnlyLowerTen(5));
 console.log(getOnlyLowerTen(12));
 ```
 
-### EXERCICE ERROR
+### EXERCICE EXCEPTION
 
 Nous allons modifier la fonction getOnlyLowerTen() pour typer l'erreur déjà émise et lever également une erreur typée si le paramètre n'est pas un nombre.
 Ensuite nous préparerons un code simple qui exécutera la fonction en gérant les éventuelles erreurs levées.
 Cette fonction devra adapter son comportement en fonction du type d'erreur levée.
+
