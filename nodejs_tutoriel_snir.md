@@ -816,9 +816,10 @@ try{
 
 ```
 
-### LEVER UNE ERREUR PERSO (EXCEPTION) AVEC THROW
+### LEVER UNE EXCEPTION AVEC THROW
 
-La commande **throw** nous permet de lever une exeption suivant nos besoins. Elle peut être utilisée n'importe où dans notre code.
+Une exception est un erreur definie par le programmeur en fonction de ses besoin.
+La commande **throw** nous permet de lever une exception, elle peut être utilisée n'importe où dans notre code.
 
 ``` JavaScript
 function getOnlyLowerTen(nbr)
