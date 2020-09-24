@@ -13,7 +13,7 @@ Il ouvre la possibilité d'exécuter du Javascript coté serveur.
 Ce qui fait la performance de NodeJS :
 
 * **base sur le moteur d'execution V8 de Chrome qui analyse et execute le code très rapidement (compilation JustInTime)**
-* **Javascript => code non bloquant basé sur la notion d'évènement *(gros avantage mais necessaire de bien intégrer la notion de Callback et de de Promise)***
+* **Javascript => code non bloquant (naturellement asynchrone) basé sur la notion d'évènement *(gros avantage mais necessaire de bien intégrer la notion de Callback et de de Promise)***
 
 ## PREPARATION DE L'ENVIRONNEMENT DE TEST
 
@@ -555,7 +555,7 @@ J'ai besoin de 2 types de messages minimum:
 Une ***fonction de callback*** est une fonction _(fille)_ passée en paramêtre d'une autre fonction _(mère)_ pour être appelé à la fin de son exécution.
 Ce système de _callback_ permet :
 
-1. d'executer une action à la fin d'une fonction "longue" pour agir sur son résultat
+1. d'executer une action à la fin d'une fonction asynchrone "longue" pour agir sur son résultat
 2. d'élaborer des fonctions acceptant des fonction anonymes pour une plus grande modularité.
 
 #### 1. Fonction asynchrone : lecture de fichier
@@ -870,3 +870,63 @@ Nous allons modifier la fonction getOnlyLowerTen() pour typer l'erreur déjà é
 Ensuite nous préparerons un code simple qui exécutera la fonction en gérant les éventuelles erreurs levées.
 Cette fonction devra adapter son comportement en fonction du type d'erreur levée.
 
+[Une solution possible](./error_exercice.js)
+
+## LES PROMISES
+
+> Lien utile :
+> * [Promise - Mozilla](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Promise)
+
+Comme les callbacks, les **Promises** (promesses) permettent de gérer l'execution asynchrone imposé par le Javascript.  
+Ils sont plus récent et légèrement plus complexe que les callbacks mais elles sont aussi plus puissantes et plus facile à lire.
+
+Le principe consiste à déclarer un objet qui représente la complétion (resolve) ou l'échec (reject) d'une operation.
+On le retourne généralement à l'appel d'une fonction asynchrone.
+Voila ce que ça peut donner si on l'applique sur le même exemple que celui utilisé sur le callback :
+
+```javascript
+function toObj(array)
+{
+  return new Promise((resolve, reject)=>
+  {
+    if(Array.isArray(array))
+    {
+        var obj={};
+        for(var i=0; i<array.length; i++)
+        {
+            obj[i] = array[i]
+          }
+        //pas d'erreur a lever
+        //appel de la fonction resolve sur le resultat de la fonction
+        resolve(obj)
+    }
+    else
+    {
+        // appel de la fonction reject en cas d'erreur
+        reject(new Error('error the argument is not an array'));
+    }
+  }
+}
+
+var a = ["momo","dede","lulu","jiji"];
+//var a = "obiwan"
+
+//appel de la fonction toObj, elle retourne un Promise
+toObj(a)
+  .then((obj)=>
+  {
+    //appel de la fonction contenue dans then en cas de succes 
+    for(var key in obj)
+    {
+      console.log(`${key} -> ${obj[key]}`);
+    }
+  })
+  .catch((err)=>
+  {
+    //appel de la fonction contenue dans catch en cas d'erreur
+    console.log(err);
+  });
+
+```
+
+Un des gros avantage des Promises est la possibilité de chainage.
