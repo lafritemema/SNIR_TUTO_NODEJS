@@ -472,7 +472,7 @@ var express = require('express');
 
 //Je prépare mes objets Router
 // L'objet Router pour la racine user
-var router_user = new express.Router();
+var router_user = express.Router();
 router_user.get('/', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -505,7 +505,7 @@ router_user.get('/', function(request, response)
 });
 
 // l'objet Router pour la partie admin
-var router_admin = new express.Router();
+var router_admin = express.Router();
 router_admin.get('/', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -550,7 +550,7 @@ app.use(function(request, response, next){
 app.listen('8080');
 
 ```
-##### EXERCICE ROUTES MULTIPLES
+##### EXERCICE ROUTES MULTIPLES
 
 Ajoutons une interface pour les utilisateurs avancés sur la racine '/ad_user'.
 Et une réponse d'erreur personnalisée pour chaque racine.
@@ -579,7 +579,7 @@ Les routes multiples sont une bonne méthode pour déléguer une partie du routa
 
 var router = require('express').Router
 
-var router_user = new router();
+var router_user = router();
 router_user.get('/', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -639,6 +639,14 @@ app.listen('8080');
 Créons un routeur ***admin_router.js*** et utilisons le pour traiter les requêtes passé sur la racine ***/admin***.
 
 ###### [Une solution possible](/projet/express_router_module.js)
+
+##### LES METHODES DE ROUTER/APP
+
+Dans le exemples précédents, nous avons vu comment récupérer les requêtes HTTP de type **GET** avec express via la fonction **.get()** de express.Application ou express.Router.  
+Le systeme est identique pour des requêtes HTTP de type :
+* POST via la fonction .post()
+* PUT via la fonction .put()
+* DELETE via la fonction .delete()
 
 #### EXPRESS ET LES MIDDLEWARES
 
