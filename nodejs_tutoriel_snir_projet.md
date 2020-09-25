@@ -59,7 +59,7 @@ Un fichier package.json listant les informations entrée ci dessus apparaît dan
 #### CHERCHER ET INSTALLER DES MODULES AVEC NPM
 
 Le noyaux NodeJS est léger (à peine 100M) donc de base ses fonctionnalités restent basiques.
-Mais l'environnement possède de nombreux modules développés par une communauté très active qui offrent des fonctionnalités avancées très variées.
+Mais l'environnement possède de nombreux modules développés par une communauté très active qui offrent des fonctionnalités avancées variées.  
 La plupart de ces modules sont disponibles dans les [dépots NPM](https://www.npmjs.com/package/).
 
 On peut chercher un module dans les dépots npm via la commande :
@@ -75,11 +75,11 @@ Exemple :
 * mise à jour de ***npm*** :
 `sudo npm install --upgrade npm`
 
-#### INSTALLATION DU MODULE [EXPRESS](https://www.npmjs.com/package/express)
+#### INSTALLATION D'UN MODULE : [EXPRESS](https://www.npmjs.com/package/express)
 
 EXPRESS est un micro-framework pour Node.js. Il fournit des outils pour aller plus vite dans la création d'applications Node.js.
 
-Commande d'installation : `npm install express`
+Commande d'installation : `npm install -r express`
 
 Après l'installation de express via ***npm*** on peut voir qu'un nouveau dossier **node_modules** a été créé à la racine de notre projet. Ce dossier va contenir tous les modules de notre projets installé via ***npm***.
 Donc ce dossier contient actuellement le module express et toutes ses dépendances.
@@ -125,16 +125,16 @@ Il contient actuellement une seule dépendance: ***express***.
 ```
 
 Un autre gros avantage de ***npm*** (et des gestionnaires de paquets en général) est constaté lors du partage de notre projet avec un tiers.
-Exemple avec un des projet Mozilla codé dans l'environnement NodeJS : [PERSONNA](https://github.com/mozilla/persona)
+Exemple avec un des projet Mozilla codé dans l'environnement NodeJS : [PERSONNA](https://github.com/mozilla/persona).  
+
 Dans le lien ci-dessus on s’aperçoit que le dossier **node_module** est absent malgrès une liste assez chargée de dépendances dans le package.json.
 
 Dans un projet NodeJS, la majorité du poids de nos fichiers sont contenu dans de dossier ***node_module*** et tous ces modules sont disponibles sur les dépots ***npm*** donc pourquoi intégrer ce dossier dans l'archive lors du partage ?? Cela va alourdir notre archive pour une valeur ajoutée très faible.
 
-La liste des dépendances est visible dans le fichier package.json donc chaque utilisateurs de l'application peut identifier les modules à installer.
-Mais installer tous les modules 1 par 1 ne serait pas très efficaces, on préfère utiliser la très complexe commande :
-`npm install`
+La liste des dépendances est visible dans le fichier package.json donc chaque utilisateurs de l'application peut identifier les modules à installer.  
 
-Cette commande va lire le fichier package.json, récupérer la liste des dépendances contenues dans l'attribut _dependencies_ et les installer 1 par 1.
+Mais installer tous les modules 1 par 1 est un peu fastidieux, on va donc utiliser la commande :  `npm install`  
+Cette commande va lire le fichier package.json, récupérer la liste des dépendances contenues dans l'attribut _dependencies_ et les installer 1 par 1 automatiquement.
 
 ### LE MODULE EXPRESS
 > Lien utile :
@@ -253,7 +253,7 @@ Normal !! L'object ***response*** passé en paramètre de la fonction de callbac
 ### HTTP DOPE A L'EXPRESS
 
 Express ne vient pas remplacer le module natif **http** , c'est plutôt un gestionnaire que l'on utilise pour récupérer (via ***http.IncomingMessage***) et transmettre (***http.ServerResponse***) des informations de/vers **http**.
-Express permet à l'utilisateur (développeur) de manipuler ces informations plus rapidement et facilement.
+Express permet à l'utilisateur (développeur) de manipuler ces informations plus rapidement et facilement : c'est un **middleware**
 
 Concrètement le code suivant :
 
@@ -628,6 +628,8 @@ Chaque middleware est une micro-application qui assure une fonctionnalité préc
 Ces middlewares sont chargés sur le module de base Express pour augmenter ses fonctionnalités.
 La version actuelle d'Express est déjà fourni avec plusieurs middleware et une multitude d'autre sont installable via npm.
 
+On intègre une nouveau middleware en utilisant la fonction **.use()** 
+
 ##### LES TEMPLATES HTML
 
 Express nous permet également, via un middleware de notre choix de créer des pages dynamique sur la base d'un template.
@@ -804,7 +806,7 @@ Le système est divisé en 2 modules :
   1. un coté client
   2. un coté serveur
 
-1. Coté serveur :
+##### Coté serveur :
 
 ```javascript
 var http = require('http');
@@ -848,7 +850,7 @@ io.sockets.on('connection', function (socket) {
 server.listen(port);
 ```
 
-2. Coté client:
+##### Coté client :
 
 ```HTML
 <!DOCTYPE html>

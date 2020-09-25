@@ -881,12 +881,17 @@ Comme les callbacks, les **Promises** (promesses) permettent de gérer l'executi
 Ils sont plus récent et légèrement plus complexe que les callbacks mais elles sont aussi plus puissantes et plus facile à lire.
 
 Le principe consiste à déclarer un objet qui représente la complétion (resolve) ou l'échec (reject) d'une operation.
+
 On le retourne généralement à l'appel d'une fonction asynchrone.
+Le promise recupéré nous permet d'agir sur le resultat via sa fonction **.then()** en cas de succès ou via **.catch** en cas de défaut.  
+
 Voila ce que ça peut donner si on l'applique sur le même exemple que celui utilisé sur le callback :
 
 ```javascript
+//fonction asynchrone
 function toObj(array)
 {
+  //je renvoi un promise
   return new Promise((resolve, reject)=>
   {
     if(Array.isArray(array))
@@ -911,9 +916,9 @@ function toObj(array)
 var a = ["momo","dede","lulu","jiji"];
 //var a = "obiwan"
 
-//appel de la fonction toObj, elle retourne un Promise
+//appel de la fonction asynchrone toObj, elle retourne un Promise
 toObj(a)
-  .then((obj)=>
+  .then((obj)=> 
   {
     //appel de la fonction contenue dans then en cas de succes 
     for(var key in obj)
@@ -929,4 +934,134 @@ toObj(a)
 
 ```
 
-Un des gros avantage des Promises est la possibilité de chainage.
+Un des gros avantage des Promises est le chainage.
+Les fonction **.then()** et **.catch()** renvoie elles même une Promise ce qui nous permet de chainer les actions afin de s'adapter au résultat envoyé par la fonction d'appel.
+
+```javascript
+var fs = require('fs')
+
+//declaration de la fonction asynchrone
+function getContent(file)
+{
+  return new Promise((resolve, reject)=>
+  {
+      fs.readFile(file, (error, content)=>
+      {
+        if(!error)
+        {
+          resolve(content);
+        }
+        else
+        {
+          reject(error);
+        }
+      });
+  });
+}
+
+getContent('html_event.html')
+  .then((res)=>
+  {
+    //en cas de succes je retourne le resultat pour la dernière promise de la chaine 
+    return res
+  })
+  .catch((rej)=>
+    //en cas de défaut j'affiche un message d'erreur
+    console.log("Error\n"+rej.message+"\nInitialisation du contenu par défaut");
+    // et je retourne une valeur par défaut (NO CONTENT)
+    return "NO CONTENT"
+  }).then((res)=>
+  {
+    //j'affiche le resultat
+    // NO CONTENT en cas de défaut, et le contenu du fichier si aucune erreur levée
+    console.log("Affichage du contenu :\n"+res)
+  });
+
+```
+
+Les autres fonctions de Promise permettent de construire une Promise contenant plusieurs autre Promises :
+* la fonction **.all()**
+* la fonction **.race()**
+
+##### fonction all()
+
+
+La Promise _racine_ est résolue seulement si toutes les Promises contenues sont résolue, sinon elle est rejetée.
+
+```javascript
+var fs = require('fs')
+
+Promise.all(
+  [fs.promises.readFile('html_event.html'),
+  fs.promises.readFile('testfile.txt')]
+)
+.then((res)=>
+{
+  console.log(res.toString());
+})
+.catch((err)=>
+{
+  console.log(err);
+})
+```
+
+##### fonction run()
+
+La Promise _racine_ est résolue dès qu'une des Promises contenues est résolue.
+
+```javascript
+var fs = require('fs')
+
+Promise.race(
+  [fs.promises.readFile('html_event.html'),
+  fs.promises.readFile('testfile.txt')]
+)
+.then((res)=>
+{
+  console.log(res.toString());
+})
+.catch((err)=>
+{
+  console.log(err);
+})
+```
+
+### NOUVEAUTE ES7 : ASYNC / AWAIT
+
+Comme les callback et les Promises, les mots clés **async** et **await** permettent la gestion du code asynchrone.
+
+Le principe consiste déclarer des fonctions asynchrones taggées avec le mot clé **async**.  
+On peut ensuite la possibilité de figer l'execution du code en attendant le retour de ces fonction avec le mot clé **await**
+
+```javascript
+var fs = require('fs')
+
+async function readFile(file)
+{
+  return fs.promises.readFile(file)
+}
+
+async function displayConcatFile(fileArray)
+{
+  var str=''; 
+  for(var f of fileArray)
+  {
+    await readFile(f)
+      .then((res)=>
+      {
+        str+=res.toString()+"\n\n"
+      })
+      .catch((err)=>
+      {
+        console.log(err)
+      });
+  }
+  console.log(str)
+}
+
+displayConcatFile(['testfile2.txt', 'testfile.txt'])
+
+```
+
+
+

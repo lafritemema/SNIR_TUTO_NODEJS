@@ -1,0 +1,1 @@
+Github est une entreprise de développement logiciel et de service dont le siège est situé aux États-Unis. Github développe notamment la plateforme Github, l'éditeur de texte Atom ou encore le framework Electron. 
