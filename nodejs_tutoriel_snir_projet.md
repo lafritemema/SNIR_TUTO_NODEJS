@@ -556,7 +556,7 @@ Et une réponse d'erreur personnalisée pour chaque racine.
 
 #### ROUTES MULTIPLES + MODULES
 
-Bon les routes multiples sont une bonne méthode pour déléguer une partie du routage à un autre élément mais tel qu'utilisé ci-dessus elle n'épure pas vraiment le code de notre serveur...
+Les routes multiples sont une bonne méthode pour déléguer une partie du routage à un autre élément mais tel qu'utilisé ci-dessus elle n'épure pas vraiment le code de notre serveur...
 **Il faut optimiser notre façon de l'utiliser en encapsulant nos Router dans des modules**
 
 ##### CREER UN ROUTER ENCAPSULÉ
@@ -610,7 +610,9 @@ router_user.get('/', function(request, response)
 
 modules.exports = router_user
 ```
-5. et j'importe ce module fraîchement créé dans le code suivant pour l'utiliser
+Dans la dernière ligne, le **modules.exports** permet de rendre _router_user_ disponibles à l'exterieur de ce module. Donc de pouvoir l'importer dans un autre module.
+
+5. j'importe ce module fraîchement créé dans le code suivant pour l'utiliser
 
 ```javascript
 var express = require('express');
@@ -695,7 +697,7 @@ app.get('/accueil', function(request, response)
 .listen(8080);
 ```
 
-Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension su fichier de template mais on peut modifier ces paramêtres via la methode **set** de **app**:
+Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension du fichier de template mais on peut modifier ces paramêtres via la methode **set** de **app**:
 * Modification du path : `app.set('views', './path/to/views')`
 * Modification du viewer engine : `app.set('view engine', 'ejs')`
 
