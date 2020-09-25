@@ -642,11 +642,43 @@ Créons un routeur ***admin_router.js*** et utilisons le pour traiter les requê
 
 ##### LES METHODES DE ROUTER/APP
 
+##### router.METHOD
 Dans le exemples précédents, nous avons vu comment récupérer les requêtes HTTP de type **GET** avec express via la fonction **.get()** de express.Application ou express.Router.  
 Le systeme est identique pour des requêtes HTTP de type :
 * POST via la fonction .post()
 * PUT via la fonction .put()
 * DELETE via la fonction .delete()
+
+##### [router.all()](https://expressjs.com/en/4x/api.html#router.all)
+
+La methode .all('monPath', callback) est executé à chaque fois que le path en parametre est activé.
+On ajoute au callback le paramêtre **next** qui correspond au middleware suivant. 
+
+```
+var router_user = router();
+router.all('*',function(request, response, next)
+{
+ console.log("requete sur la racine user");
+ next();
+}).get('/', function(request, response)
+{
+  response.setHeader("Content-Type","text/html");
+  answer = `<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>accueil</title>
+    </head>
+    <body>
+      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL DE LA PARTIE USER</h1>
+    </body>
+  </html>`;
+  response.status(200).send(answer);
+})
+```
+##### router.route()
+
+La fonction route nous permet de compresser le format de notre 
 
 #### EXPRESS ET LES MIDDLEWARES
 
@@ -708,7 +740,7 @@ app.get('/accueil', function(request, response)
 .listen(8080);
 ```
 
-Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension du fichier de template mais on peut modifier ces paramêtres via la methode **set** de **app**:
+Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension du fichier de template mais on peut modifier ces paramêtres via la methode **.set()** de **app**:
 * Modification du path : `app.set('views', './path/to/views')`
 * Modification du viewer engine : `app.set('view engine', 'ejs')`
 
