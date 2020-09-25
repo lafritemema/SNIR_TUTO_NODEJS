@@ -290,7 +290,10 @@ http.createServer(app).listen(8080);
 
 ### LE ROUTING AVEC EXPRESS
 
-Comme vu précédement le express nous permet de gérer le routing via la fonction **[get()](https://expressjs.com/en/4x/api.html#app.get)** de son objet **[Application](https://expressjs.com/en/4x/api.html#app)**
+Comme vu précédement le express nous permet pour notre besoin de gérer le routing d'une requete **GET** via la fonction **[get()](https://expressjs.com/en/4x/api.html#app.get)** de son objet **[Application](https://expressjs.com/en/4x/api.html#app)**.
+
+On doit via la fonction [use()](https://expressjs.com/en/4x/api.html#app.use), définir une action par défaut en cas d'url non reconnu.
+Cette fonction peut prendre un _path_ en paramêtre pour adapter le message d'erreur en fonction de l'url selectionné.
 
 #### PREMIER EXEMPLE DE ROUTING
 
