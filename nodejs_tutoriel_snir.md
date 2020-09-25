@@ -911,7 +911,7 @@ function toObj(array)
         // appel de la fonction reject en cas d'erreur
         reject(new Error('error the argument is not an array'));
     }
-  }
+  });
 }
 
 var a = ["momo","dede","lulu","jiji"];
@@ -967,6 +967,7 @@ getContent('html_event.html')
     return res
   })
   .catch((rej)=>
+  {
     //en cas de défaut j'affiche un message d'erreur
     console.log("Error\n"+rej.message+"\nInitialisation du contenu par défaut");
     // et je retourne une valeur par défaut (NO CONTENT)
