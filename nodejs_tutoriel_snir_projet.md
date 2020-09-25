@@ -14,8 +14,7 @@ NPM est le gestionnaire de paquet officiel de NodeJS, il permet donc d'installer
   * package name
   * version (1.0.0 par défaut)
   * description
-  * entry point (défaut index.js)=> point d'entrée du projet, c'est le scrip exécuté lors de la commande
-    `npm start`
+  * entry point (défaut index.js)
   * test command => script de test du projet, c'est le script exécuté lors de la commande
     `npm test`
   * git repository => lien vers le github du projet
@@ -136,7 +135,23 @@ La liste des dépendances est visible dans le fichier package.json donc chaque u
 Mais installer tous les modules 1 par 1 est un peu fastidieux, on va donc utiliser la commande :  `npm install`  
 Cette commande va lire le fichier package.json, récupérer la liste des dépendances contenues dans l'attribut _dependencies_ et les installer 1 par 1 automatiquement.
 
-### LE MODULE EXPRESS
+#### NPM START
+
+Pour lancer notre server via la commande **npm start** on va ajouter la ligne suivant dans notre package.json dans la clé **scripts**.
+
+```json
+...
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+    //ajout de la ligne start
+    "start":"node main.js"
+  },
+ ...
+```
+
+
+### LE MODULE EXPRESS
+
 > Lien utile :
 > * [Documentation Express](https://expressjs.com/en/4x/api.html)
 
