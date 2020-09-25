@@ -872,7 +872,8 @@ Cette fonction devra adapter son comportement en fonction du type d'erreur levé
 
 [Une solution possible](./error_exercice.js)
 
-## LES PROMISES
+
+## LES PROMISES
 
 > Lien utile :
 > * [Promise - Mozilla](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Promise)
@@ -984,7 +985,6 @@ Les autres fonctions de Promise permettent de construire une Promise contenant p
 * la fonction **.race()**
 
 **fonction all()**
-
 
 La Promise _racine_ est résolue seulement si toutes les Promises contenues sont résolue, sinon elle est rejetée.
 
