@@ -1006,7 +1006,7 @@ Promise.all(
 })
 ```
 
-**fonction run()**
+**fonction race()**
 
 La Promise _racine_ est résolue dès qu'une des Promises contenues est résolue.
 
