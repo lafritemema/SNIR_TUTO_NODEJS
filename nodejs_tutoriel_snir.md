@@ -983,7 +983,7 @@ Les autres fonctions de Promise permettent de construire une Promise contenant p
 * la fonction **.all()**
 * la fonction **.race()**
 
-##### fonction all()
+**fonction all()**
 
 
 La Promise _racine_ est résolue seulement si toutes les Promises contenues sont résolue, sinon elle est rejetée.
@@ -1005,7 +1005,7 @@ Promise.all(
 })
 ```
 
-##### fonction run()
+**fonction run()**
 
 La Promise _racine_ est résolue dès qu'une des Promises contenues est résolue.
 
