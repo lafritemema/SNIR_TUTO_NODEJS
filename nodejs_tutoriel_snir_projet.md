@@ -78,7 +78,7 @@ Exemple :
 
 EXPRESS est un micro-framework pour Node.js. Il fournit des outils pour aller plus vite dans la création d'applications Node.js.
 
-Commande d'installation : `npm install -r express`
+Commande d'installation : `npm install express --save`
 
 Après l'installation de express via ***npm*** on peut voir qu'un nouveau dossier **node_modules** a été créé à la racine de notre projet. Ce dossier va contenir tous les modules de notre projets installé via ***npm***.
 Donc ce dossier contient actuellement le module express et toutes ses dépendances.
