@@ -871,7 +871,7 @@ Le callback en parametre de cette fonction doit prendre un troisième parametre 
 ```javascript
 ...
 route = express.Router()
-app.route('/information') //reception sur /information
+route.route('/information') //reception sur /information
   .all((request, response, next)=> 
   { // appel a chaque requete
     console.log('requete sur /information')
