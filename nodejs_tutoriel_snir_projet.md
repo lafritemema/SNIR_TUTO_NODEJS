@@ -14,7 +14,8 @@ NPM est le gestionnaire de paquet officiel de NodeJS, il permet donc d'installer
   * package name
   * version (1.0.0 par défaut)
   * description
-  * entry point (défaut index.js)
+  * entry point (défaut index.js)=> point d'entrée du projet, c'est le scrip exécuté lors de la commande
+    `npm start`
   * test command => script de test du projet, c'est le script exécuté lors de la commande
     `npm test`
   * git repository => lien vers le github du projet
@@ -55,6 +56,7 @@ Un fichier package.json listant les informations entrée ci dessus apparaît dan
 }
 
 ```
+
 #### CHERCHER ET INSTALLER DES MODULES AVEC NPM
 
 Le noyaux NodeJS est léger (à peine 100M) donc de base ses fonctionnalités restent basiques.
@@ -71,6 +73,7 @@ Pour une installation dans l'environnement global on utilise l'option **-g**.
 Exemple :
 * installation du module ***n*** pour la mise à jour et la gestion des version de nodejs :
 `sudo npm install -g n`
+
 * mise à jour de ***npm*** :
 `sudo npm install --upgrade npm`
 
@@ -78,7 +81,7 @@ Exemple :
 
 EXPRESS est un micro-framework pour Node.js. Il fournit des outils pour aller plus vite dans la création d'applications Node.js.
 
-Commande d'installation : `npm install -r express`
+Commande d'installation : `npm install express --save`
 
 Après l'installation de express via ***npm*** on peut voir qu'un nouveau dossier **node_modules** a été créé à la racine de notre projet. Ce dossier va contenir tous les modules de notre projets installé via ***npm***.
 Donc ce dossier contient actuellement le module express et toutes ses dépendances.
@@ -135,22 +138,7 @@ La liste des dépendances est visible dans le fichier package.json donc chaque u
 Mais installer tous les modules 1 par 1 est un peu fastidieux, on va donc utiliser la commande :  `npm install`  
 Cette commande va lire le fichier package.json, récupérer la liste des dépendances contenues dans l'attribut _dependencies_ et les installer 1 par 1 automatiquement.
 
-#### NPM START
-
-Pour lancer notre server via la commande **npm start** on va ajouter la ligne suivant dans notre package.json dans la clé **scripts**.
-
-```json
-...
-"scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-    //ajout de la ligne start
-    "start":"node main.js"
-  },
- ...
-```
-
-
-### LE MODULE EXPRESS
+### LE MODULE EXPRESS
 
 > Lien utile :
 > * [Documentation Express](https://expressjs.com/en/4x/api.html)
@@ -158,7 +146,7 @@ Pour lancer notre server via la commande **npm start** on va ajouter la ligne su
 Comme présenté lors de son installation, le module **express** est un module très utilisé dans NodeJS. C'est un mini-framework qui va simplifier énormément plusieurs fonctions déjà codés dans le [tutoriel précédent](./nodejs_tutoriel_snir.md).
 Mais comme tous les modules de NodeJS, express s'
 
-#### PREMIER SERVEUR EXPRESS
+### PREMIER SERVEUR EXPRESS
 
 Pour illustrer le fonctionnement de express, reprenons un code déjà vu précédement :
 
@@ -201,7 +189,7 @@ var server = http.createServer(function(request,response)
     default:
       response.writeHead(404);
   }
-  response.end(answer);
+  response.send(answer);
 });
 ```
 
@@ -290,10 +278,7 @@ http.createServer(app).listen(8080);
 
 ### LE ROUTING AVEC EXPRESS
 
-Comme vu précédement le express nous permet pour notre besoin de gérer le routing d'une requete **GET** via la fonction **[get()](https://expressjs.com/en/4x/api.html#app.get)** de son objet **[Application](https://expressjs.com/en/4x/api.html#app)**.
-
-On doit via la fonction [use()](https://expressjs.com/en/4x/api.html#app.use), définir une action par défaut en cas d'url non reconnu.
-Cette fonction peut prendre un _path_ en paramêtre pour adapter le message d'erreur en fonction de l'url selectionné.
+Comme vu précédement le express nous permet de gérer le routing via la fonction **[get()](https://expressjs.com/en/4x/api.html#app.get)** de son objet **[Application](https://expressjs.com/en/4x/api.html#app)**
 
 #### PREMIER EXEMPLE DE ROUTING
 
@@ -395,7 +380,8 @@ Ajoutons également un code qui nous renvoi un status erreur si un url de l'éta
 
 #### LES ROUTES DYNAMIQUES
 
-Sur l'exemple ci dessous on observe beaucoup de code en double. Pour ce type d'application on préférera les routes dynamiques aux routes statiques.
+Sur l'exemple ci dessous on observe beaucoup de code en double.  
+Pour ce type d'application on préférera les routes dynamiques aux routes statiques.
 
 Le routes dynamique sont formulés de la façon suivante :
 `/batiment/etage/:etageNum`
@@ -472,7 +458,7 @@ var express = require('express');
 
 //Je prépare mes objets Router
 // L'objet Router pour la racine user
-var router_user = express.Router();
+var router_user = new express.Router();
 router_user.get('/', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -505,7 +491,7 @@ router_user.get('/', function(request, response)
 });
 
 // l'objet Router pour la partie admin
-var router_admin = express.Router();
+var router_admin = new express.Router();
 router_admin.get('/', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -550,7 +536,7 @@ app.use(function(request, response, next){
 app.listen('8080');
 
 ```
-##### EXERCICE ROUTES MULTIPLES
+##### EXERCICE ROUTES MULTIPLES
 
 Ajoutons une interface pour les utilisateurs avancés sur la racine '/ad_user'.
 Et une réponse d'erreur personnalisée pour chaque racine.
@@ -559,7 +545,7 @@ Et une réponse d'erreur personnalisée pour chaque racine.
 
 #### ROUTES MULTIPLES + MODULES
 
-Les routes multiples sont une bonne méthode pour déléguer une partie du routage à un autre élément mais tel qu'utilisé ci-dessus elle n'épure pas vraiment le code de notre serveur...
+Bon les routes multiples sont une bonne méthode pour déléguer une partie du routage à un autre élément mais tel qu'utilisé ci-dessus elle n'épure pas vraiment le code de notre serveur...
 **Il faut optimiser notre façon de l'utiliser en encapsulant nos Router dans des modules**
 
 ##### CREER UN ROUTER ENCAPSULÉ
@@ -579,7 +565,7 @@ Les routes multiples sont une bonne méthode pour déléguer une partie du routa
 
 var router = require('express').Router
 
-var router_user = router();
+var router_user = new router();
 router_user.get('/', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -613,9 +599,7 @@ router_user.get('/', function(request, response)
 
 modules.exports = router_user
 ```
-Dans la dernière ligne, le **modules.exports** permet de rendre _router_user_ disponibles à l'exterieur de ce module. Donc de pouvoir l'importer dans un autre module.
-
-5. j'importe ce module fraîchement créé dans le code suivant pour l'utiliser
+5. et j'importe ce module fraîchement créé dans le code suivant pour l'utiliser
 
 ```javascript
 var express = require('express');
@@ -640,46 +624,6 @@ Créons un routeur ***admin_router.js*** et utilisons le pour traiter les requê
 
 ###### [Une solution possible](/projet/express_router_module.js)
 
-##### LES METHODES DE ROUTER/APP
-
-##### router.METHOD
-Dans le exemples précédents, nous avons vu comment récupérer les requêtes HTTP de type **GET** avec express via la fonction **.get()** de express.Application ou express.Router.  
-Le systeme est identique pour des requêtes HTTP de type :
-* POST via la fonction .post()
-* PUT via la fonction .put()
-* DELETE via la fonction .delete()
-
-##### [router.all()](https://expressjs.com/en/4x/api.html#router.all)
-
-La methode .all('monPath', callback) est executé à chaque fois que le path en parametre est activé.
-On ajoute au callback le paramêtre **next** qui correspond au middleware suivant. 
-
-```
-var router_user = router();
-router.all('*',function(request, response, next)
-{
- console.log("requete sur la racine user");
- next();
-}).get('/', function(request, response)
-{
-  response.setHeader("Content-Type","text/html");
-  answer = `<!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="utf-8"/>
-      <title>accueil</title>
-    </head>
-    <body>
-      <h1>VOUS ÊTES SUR LA PAGE D'ACCUEIL DE LA PARTIE USER</h1>
-    </body>
-  </html>`;
-  response.status(200).send(answer);
-})
-```
-##### router.route()
-
-La fonction route nous permet de compresser le format de notre 
-
 #### EXPRESS ET LES MIDDLEWARES
 
 Express est un framework basé sur le concept de **MIDDLEWARES**.
@@ -690,11 +634,10 @@ La version actuelle d'Express est déjà fourni avec plusieurs middleware et une
 
 On intègre une nouveau middleware en utilisant la fonction **.use()** 
 
-##### LES TEMPLATES HTML
+##### PREMIER MIDDLEWARE : LES TEMPLATES HTML
 
 Express nous permet également, via un middleware de notre choix de créer des pages dynamique sur la base d'un template.
-Plusieurs "view engines" existent : jade/pug, ejs, Handlebars ...; Chaque module a sa syntaxe propre mais le fonctionnement généralement reste similaire :
-l'injection de variables dans un template existant.
+Plusieurs "view engines" existent : jade/pug, ejs, Handlebars ...; Chaque module a sa syntaxe propre mais le fonctionnement généralement reste similaire.
 
 ###### UTILISER UN TEMPLATE
 
@@ -740,7 +683,7 @@ app.get('/accueil', function(request, response)
 .listen(8080);
 ```
 
-Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension du fichier de template mais on peut modifier ces paramêtres via la methode **.set()** de **app**:
+Dans sa configuration initial tous les templates doivent se positionner dans le dossier ***./views*** et le viewer engine est automatiquement selectionné grace à l'extension su fichier de template mais on peut modifier ces paramêtres via la methode **set** de **app**:
 * Modification du path : `app.set('views', './path/to/views')`
 * Modification du viewer engine : `app.set('view engine', 'ejs')`
 
@@ -837,7 +780,6 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './project_views');
 
-
 app.get('/batiment/accueil', function(request, response)
 {
   response.setHeader("Content-Type","text/html");
@@ -857,7 +799,467 @@ app.get('/batiment/accueil', function(request, response)
 
 ```
 
-### LE MODULE SOCKET.IO
+#### PLUS LOIN AVEC EXPRESS
+
+##### LE ROUTER
+
+L'objet **[Router](https://expressjs.com/fr/4x/api.html#router)** comporte un nombre limité de fonction mais toutes très utiles.  
+Toutes ces fonction (excepté .route()) renvoies l'objet Router qui les appel, on peut donc les chainer à l'infini.
+
+Ces même fonctions sont également disponibles dans l'objet **[Application](https://expressjs.com/fr/4x/api.html#app)**
+
+###### Methode [Router.METHOD](https://expressjs.com/fr/4x/api.html#router.METHOD)
+
+Ce mot clé METHOD représente les methodes HTTP.
+* GET => router.get()
+* POST => router.post()
+* UPDATE => router.update()
+* ... [liste des methodes](https://expressjs.com/fr/4x/api.html#routing-methods)
+
+Elle fonctionnent toutes de la même façon :
+Router.METHOD(**url**, **action lors requête**)
+
+On récupere les informations liées à la requête via l'objet [Request](https://expressjs.com/fr/4x/api.html#req)
+
+```javascript
+...
+route = express.Router()
+route //reception d'une requete GET sur /information
+  .get('/information', (request, response)=>
+  {
+    console.log("requete GET reçue");
+    response.status(200).send("SUCCESS GET");
+  }) // reception d'une methode POST sur /information
+  .post('/information', (request, response)=>
+  {
+    console.log("requete POST reçue");
+    response.status(200).send("SUCCESS POST");
+  })
+
+app.use('/', route).listen(8080);
+
+```
+
+###### Methode [Router.route()](https://expressjs.com/fr/4x/api.html#router.route)
+
+La methode **.route()** permet de condenser la formulations ci-dessus pour la rendre plus claire et organisée (sans répétition)
+
+```javascript
+...
+route = express.Router()
+route.route('/information') //reception sur /information
+  .get((request, response)=> // si GET
+  {
+    console.log("requete GET reçue");
+    response.status(200).send("SUCCESS GET");
+  })
+  .post((request, response)=> //si POST
+  {
+    console.log("requete POST reçue");
+    response.status(200).send("SUCCESS POST");
+  });
+app.use('/', route).listen(8080);
+
+```
+
+###### Methode [Router.all()](https://expressjs.com/fr/4x/api.html#router.all)
+
+La méthode **.all()** permet d'activer une fonction à chaque reception d'une requête sur l'url passé en paramêtre, quelque soit la méthode HTTP utilisée. 
+
+Le callback en parametre de cette fonction doit prendre un troisième parametre ***next*** qui represente le middleware suivant.
+
+```javascript
+...
+route = express.Router()
+app.route('/information') //reception sur /information
+  .all((request, response, next)=> 
+  { // appel a chaque requete
+    console.log('requete sur /information')
+    next() // j'appel le middleware suivant GET ou POST en fonction de la requete
+  })
+  .get((request, response)=> // si GET
+  {
+    console.log("requete GET reçue");
+    response.status(200).send("SUCCESS GET");
+  })
+  .post((request, response)=> //si POST
+  {
+    console.log("requete POST reçue");
+    response.status(200).send("SUCCESS POST");
+  });
+
+app.use('/', route).listen(8080);
+```
+
+###### Methode [Router.param()](https://expressjs.com/fr/4x/api.html#router.param)
+
+La methode **.param()** permet d'identifier la présence d'un paramêtre dynamique dans l'url. 
+
+Le callback en parametre de cette fonction prend également le parametre ***next*** qui represente le middleware suivant mais aussi ***id*** qui représente la valeur du paramêtre.
+
+> Il est possible de passer des informations au middleware suivant en intégrant des parametres dans la fonction **next()**. 
+
+
+```javascript
+
+var alter = {
+  'batman':'Bruce Wayne',
+  'superman':'Clark Joseph Kent'
+}
+
+route = express.Router()
+
+// si presence du parametre dynamique "para" 
+route.param('para', (request, response, next, id)=>
+  {
+    console.log('parametre PARA identifié');
+    //j'affiche la valeur de para
+    console.log("Valeur du para : %s", id);
+    // je recupere la veritable identité dans alter et je cree une cle identité dans request
+    request.identite = alter[id];
+    next();
+  });
+
+route.route('/information/:para') //reception sur /information
+  .all((request, response, next)=> 
+  { // appel a chaque requete
+    // j'affiche l'url et le request.identité
+    console.log('requete sur /information pour %s', request.identite);
+    next();
+  })
+  .get((request, response)=>
+  {
+    console.log("requete GET reçue");
+    response.status(200).send(`SUCCESS GET POUR ${request.identite}`);
+  });
+
+route.route('/description/:para')//reception sur /description
+  .all((request, response, next)=> 
+  { 
+    console.log('requete sur /description pour %s', request.identite);
+    next();
+  })
+  .get((request, response)=>
+  {
+    console.log("requete GET reçue");
+    response.status(200).send(`SUCCESS GET POUR ${request.identite}`);
+  });
+
+app.use('/', route).listen(8080);
+```
+
+###### Methode [Router.use()](https://expressjs.com/fr/4x/api.html#router.use)
+
+Comme la méthode **.use()** de **Application**, celle de **Router** permet d'ajouter un middleware à notre Router. 
+Ce middleware peut être :
+* un module installé via npm (ex: body-parser)
+* un autre Router
+* une simple fonction
+
+> le module [body-parser](https://github.com/expressjs/body-parser) fonction .json() permet de parser simplement le corps (.body) de l'object [Request](https://expressjs.com/fr/api.html#req).
+> Depuis la version 4 , des middleware de parsing basé sur **body-parser** on été intégrés en natif à express (express.json(), express.raw(), express.text(), express.static(), express.text(), express.urlencoded())
+
+```javascript
+// a vous de préparer l'utilisation de bodyparser
+bodyparser = require('body-parser');
+
+//creation router main
+main = express.Router();
+//ajout du middleware body-parser format json()
+//peut être remplace par express.json() à partir de la version 4.X 
+main.use(bodyparser.json());
+
+//je cree et parametre mon router route_weap
+route_weap = express.Router();
+route_weap.route('/accueil')
+  .all((request, response, next)=>
+  {
+    console.log("requete sur /weapons/accueil");
+    next();
+  })
+  .get((request, response)=>
+  {
+    console.log("requete GET reçue");
+    response.status(200).send("SUCCESS GET");
+  })
+  .post((request, response)=>
+  {
+    console.log("requete POST reçue");
+    //je recupere la data lié à la requet via l'objet request.body préalablement parse par bodyparser.json()
+    console.log("user : %s", request.body.user)
+    response.status(200).send("SUCCESS POST");
+  });
+
+//je cree et parametre mon router route_char 
+route_char = express.Router();
+route_char.route('/accueil')
+  .all((request, response, next)=>
+  {
+    console.log("requete sur /character/accueil");
+    next();
+  })
+  .get((request, response)=>
+  {
+    console.log("requete GET reçue");
+    response.status(200).send("SUCCESS GET");
+  })
+  .post((request, response)=>
+  {
+    console.log("requete POST reçue");
+    console.log("user : %s", request.body.user)
+    response.status(200).send("SUCCESS POST");
+  });
+
+// j'ajoute des middlewares au router main via la fonction .use()
+main
+.use('/characters', route_char) // j'ajoute un router
+.use('/weapons', route_weap) // j'ajoute un autre router
+.use((request, response)=> // j'ajoute une fonction (en cas d'url non reconnu)
+{
+  console.log("url %s non reconnu", request.url)
+  response.status(400).send("REQUEST ERROR")
+});
+
+app.use('/', main).listen(8080);
+
+//reste a faire un CURL pour visualiser le résultat.
+```
+
+##### REQUEST / RESPONSE
+
+L'objet [Request](https://expressjs.com/fr/api.html#req) représente la requête client, il contient donc **toutes** les informations la concernant.
+Via ses parametres et ses méthodes, il permet de s'adapter aux attentes client et de logger des infos precieuse pour l'analyse ultérieure.
+
+L'objet [Response](https://expressjs.com/en/4x/api.html#res) représente la réponse server, permet de préparer précisément les data et les metadata a envoyer au client.  
+
+>[Application.locals](https://expressjs.com/fr/4x/api.html#app.locals) utilisé ci-dessous à été intégré à la version 4.X de express et nous permet de définir des variable 'globale" lié à l'application (conf, env ...).
+
+```javascript
+
+// le parametre locals de app nous permet d'integrer des variables liée à l'application
+app.locals.root = process.env.PWD
+
+var heros = 
+{
+  batman:{
+    identite: "Bruce Wayne",
+    ville:"Gotham City"
+  },
+  superman:{
+    identite: "Clark Joseph Kent",
+    ville: "Metropolis"
+  }
+}
+
+app.route('/description/:hero')
+  .all((request, response, next)=>
+  {
+    // affichage du HTTP Method et du path
+    console.log("Requete %s sur l'url %s", request.method, request.path);
+    // address ip du client ::ffff pour IPV4
+    console.log("addresse ip du client : %s", request.ip)
+    //j'affiche la valeur de l'element dynamique hero
+    console.log("Parametre hero : %s", request.params.hero);
+    // j'affiche le protocole
+    console.log('Protocole utilisé : %s', request.protocol);
+    
+    // j'affiche les parametre de l'url, il sont contenu dans la variable .query
+    q_para = "";
+    for(var key in request.query)
+    {
+      q_para += `\t${key} = ${request.query[key]}\n`;
+    }
+    console.log("Parametres dans l'url :\n%s", q_para);
+    //j'affiche le Content-Type
+    console.log("Content-type : %s", request.get('Content-Type'));
+    //j'affiche le charset
+    console.log("charset : %s", request.get('charset'))
+    //j'affiche le Accept
+    console.log('Accept : %s', request.get('Accept'))
+    //J'affiche le encodings
+    console.log('Accept : %s', request.get('Content-Encoding'))
+    next()
+  })
+  .get((request, response)=>
+  {
+    data = {hero : request.params.hero, desc : heros[request.params.hero]}
+    //j'utilise request.accepts() pour identifier le contenu accepté par le client
+    if(request.accepts('text/html'))
+    {
+      // j'envoi une reponse avec Content-Type: text/html, j'utilise response.render() pour generer le html via le template
+      response.status(200).type('text/html').render('hero.ejs', data)
+    }
+    else if(request.accepts('application/json'))
+    {
+      //je renvoi une reponse au format JSON via request.json(), le Content-Type est defini en auto par .json()
+      response.status(200).json(data)
+    }
+    else{
+      response.status(417).send("header Accept manquant ou non reconnu")
+    }
+  })
+  .post((request, response)=>
+  {
+    response.send('end')
+  });
+
+app.use((request, response)=>
+{
+  console.log('ERROR : requete %s sur url inconnu %s', request.method, request.originalUrl)
+  if(request.accepts('text/html'))
+    {
+      // je renvoi un fichier 404.png avec response.sendFile()
+      response.status(404).sendFile(`./media/404.png`,{root:app.locals.root});
+    }
+    else if(request.accepts('application/json'))
+    {
+      response.status(404).send(`ERROR : url ${request.originalUrl} inexistant`);
+    }
+    else{
+      response.status(417).send("ERROR: header Accept manquant ou non reconnu")
+    }
+})
+app.listen(8080)
+```
+
+##### APP SETTING TABLE
+
+La **[app setting table](https://expressjs.com/fr/4x/api.html#app.settings.table)** est un tableau de variable permettant de stocket des informations diverse concernant notre serveur Express.
+
+Vous pouvez, via la fonction [Application.set()](https://expressjs.com/fr/4x/api.html#app.set), définir des variables suivant votre besoin sous le format **clé** : **valeur**.  
+**Attention : certaine clés sont réservée par le système et nécessitent des valeurs définie** ([liste clés reservé](https://expressjs.com/fr/4x/api.html#app.settings.table)), exemples :
+* views : string => path vers le dossier template
+* view engine : string => middleware générateur de template
+* query parser : string => middleware parser de requête 
+* ...
+
+La fonction [Application.get()](https://expressjs.com/fr/4x/api.html#app.set) permet de récupérer la valeur de la variable.
+
+Les fonctions [Application.disable()](https://expressjs.com/fr/4x/api.html#app.disable) et [Application.enable()](https://expressjs.com/fr/4x/api.html#app.enable) permettent de desactiver/activer ces variables.
+Les fonction [Application.disabled()](https://expressjs.com/fr/4x/api.html#app.disable) et [Application.enabled()](https://expressjs.com/fr/4x/api.html#app.enable) permettent de contrôler si les variables sont activées/desactivées.
+
+
+```JavaScript
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser')
+
+app.set('view engine', 'ejs');
+app.set('views', './project_views');
+app.set('appTitle', 'Titre par défaut');
+
+//je charge le middleware body-parser, bonne solution pour le parsing du body de la request POST
+
+//je defini la route pour /application
+app.route('/application')
+.get((request, response)=>
+{
+  //reponse a la requete GET
+  response.setHeader("Content-Type","text/html");
+  
+  //j'utilise app.get() pour recupere la variable appTitle de la app setting table
+  response.status(200).render('acceuil_app.ejs',{title : app.get('appTitle')});
+  //a vous d'ecrire le template acceuil_app.ejs et d'injecter la variable title
+  
+})
+.post((request, response)=>
+{
+  //reponse a la requete POST
+  // je verifie si j'ai l'info title dans les data du POST
+  if (request.body.title)
+  {
+    //si'info est presente je fait l'update
+    app.set('appTitle', request.body.title);
+    //et je renvoi SUCCESS
+    response.status(200).send("SUCCESS");
+  }
+  else
+  {
+    //si non presente je renvoi DEFAULT
+    response.status(400).send("DEFAULT")
+  }
+});
+
+app.listen(8080)
+```
+
+##### 
+
+
+
+##### LA GESTION DES COOKIES
+
+> Lien utile :
+> * [Les cookies](https://support.mozilla.org/fr/kb/cookies-informations-sites-enregistrent) 
+
+Les cookies permettent au server de stocker un faible volume d'information coté client sur le navigateur.
+Sur express les cookies sont générés par l'objet Response et lus par l'objet Request.
+
+On utilise le middleware [cookie-parser](https://www.npmjs.com/package/cookie-parser) pour récupérer et parser facilement les cookies.
+
+```javascript 
+var cp = require('cookie-parser');
+// j'integre le middleware cookie-parser
+app.use(cp())
+
+var user =
+{
+  lafritemema:
+  {
+    login:'lafritemema',
+    id : 'hexaid',
+    profil : 'user'
+  }
+}
+
+//je prepare un route pour GET sur login
+app.get('/login', (request, response)=>
+{
+    response.status(200).render('login.ejs')
+    //a vous d'ecrire le template login.ejs contenant un formulaire permettant de se logger
+    //il devra faire un redirect vers /getuser avec le parametre url login 
+}) // je prepare un root pour GET sur /user pour generer un cookie
+.get('/getuser', (request, response, next)=>
+{ 
+    //je recuperer le parametre login dans l'url
+    var login = request.query.login;
+    //je genere le cookie user et je fait un redirect vers room
+    response.cookie('user', user[login]).redirect('/room');
+})
+
+// route pour recuperer requete sur /room
+app.route('/room')
+  .all((request, response, next)=>
+  {
+    
+    if(request.cookies && request.cookies.user)
+    {
+      //si cookies.user present, je passe au prochain middle
+      console.log(request.cookies)
+      next()
+    }
+    else
+    {
+      //sinon je fait un redirect vers /login
+      response.redirect('/login')
+    }
+  })
+  .get((request, response)=>
+  {   
+      //je renvoi un template avec les info contenu dans le cookie.user
+      console.log(request.cookies)
+      data = {login:request.cookies.user.login, id:request.cookies.user.id, profil: request.cookies.user.profil}
+      response.status(200).render('room.ejs', data)
+      //a vous d'ecrire un template affichant le profil
+  });
+
+app.listen(8080)
+
+```
+Le code ci-dessus est une ébauche de la gestion de session.
+Un middleware [express-session](https://www.npmjs.com/package/express-session) est disponible pour une gestion complète des sessions.
+
+### LE MODULE SOCKET.IO
 
 **socket.io** est un module NodeJS permettant une communication temps réelle entre le client et le serveur.
 Elle s'appui principalement sur la technologie [Websocket](https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API), une API permettant une communication bidirectionnelle entre le client et le serveur.
@@ -866,7 +1268,7 @@ Le système est divisé en 2 modules :
   1. un coté client
   2. un coté serveur
 
-##### Coté serveur :
+##### Coté serveur :
 
 ```javascript
 var http = require('http');
@@ -878,7 +1280,7 @@ var port = 8080;
 var server = http.createServer(app);
 
 //declaration d'un objet socket.io à l'ecoute de notre serveur http
-var io = require('socket.io').listen(server);
+var io = require('socket.io').attach(server);
 //une variable pour identifier les client
 var client = 0;
 // un .get() pour récupérer les requetes
@@ -908,6 +1310,7 @@ io.sockets.on('connection', function (socket) {
 });
 
 server.listen(port);
+
 ```
 
 ##### Coté client :
@@ -944,3 +1347,6 @@ server.listen(port);
   </body>
 </html>
 ```
+
+
+####
