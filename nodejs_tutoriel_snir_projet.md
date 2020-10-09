@@ -1416,7 +1416,7 @@ io.on('connection',(socket)=>
   console.log('liste des sockets : ' + ids)
 });
 
-app.listen(port)
+server.listen(port)
 ...
 ```
 
@@ -1469,8 +1469,10 @@ app.get('/', (request, response)=>
 io.on('connection',(socket)=>
 {
   console.log('nouvelle connexion id :' + socket.id)
-  var ids = Object.keys(io.sockets.sockets)
-  console.log('liste des sockets : ' + ids)
+  io.clients((err, clients)
+  {
+    console.log('liste des sockets : ' + ids)
+  });
 });
 ...
 ```
@@ -1567,10 +1569,6 @@ user_socket.on('connection', (socket)=>
       const socket = io('http://localhost:<%= port %>/<%= room %>').open();
   </script>
 ```
-
-
-
-
 
 ##### [NAMESPACE](https://socket.io/docs/server-api/#Namespace)
 
@@ -1686,6 +1684,7 @@ admin.on('connection', (socket)=>
 Dans chaque Namespace nous pouvont définir des chaines spécifique : les Rooms.
 Par défaut lors de la création de l'objet Socket coté server, une room identifié par l'id du socket est créée.  
 Mais nous pouvons créée des rooms supplémentaire pour affiner le routing les message emis par les Namespaces.  
+
 Ces rooms sont créé automatiquement lors de l'appel de la fonction [Socket.join()](https://socket.io/docs/server-api/#socket-join-room-callback)
 
 
@@ -1775,15 +1774,6 @@ user.on('connection', (socket)=>
 ```
 
 
-
-
-
-
-
-
-
-
-
 #### CLIENT API
 
 L'API client repose sur trois objets principaux:
@@ -1845,7 +1835,7 @@ admin.on('connection', (socket)=>
 
 ##### SOCKET
 
-L'objet Socket client comporte les fonction pricipale tel que Socket.emit() et Socket.close() pour l'écoute et la transmission de message.  
+L'objet Socket client comporte les fonction pricipale tel que Socket.emit() et Socket.on() pour l'écoute et la transmission de message.  
 Ces méthode fonctionnent de la même façon que celle coté Server
 
 La methode Socket.close() permet de déconnecter le Socket coté client.
