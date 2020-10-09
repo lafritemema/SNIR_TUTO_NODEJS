@@ -871,7 +871,7 @@ Le callback en parametre de cette fonction doit prendre un troisième parametre 
 ```javascript
 ...
 route = express.Router()
-route.route('/information') //reception sur /information
+app.route('/information') //reception sur /information
   .all((request, response, next)=> 
   { // appel a chaque requete
     console.log('requete sur /information')
@@ -1265,88 +1265,596 @@ Un middleware [express-session](https://www.npmjs.com/package/express-session) e
 Elle s'appui principalement sur la technologie [Websocket](https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API), une API permettant une communication bidirectionnelle entre le client et le serveur.
 
 Le système est divisé en 2 modules :
-  1. un coté client
-  2. un coté serveur
+  1. un coté client : [Le Client API](https://socket.io/docs/client-api/)
+  2. un coté serveur : [Le Server API](https://socket.io/docs/server-api/)
 
-##### Coté serveur :
+#### MON PREMIER SOCKET
+
+##### COTE SERVEUR
 
 ```javascript
+const port = 8080;
+//declaration serveur http et express
+var app = require('express')();
 var http = require('http');
-var express = require('express');
-var app = express();
-var port = 8080;
-
-//declaration du serveur
 var server = http.createServer(app);
 
-//declaration d'un objet socket.io à l'ecoute de notre serveur http
-var io = require('socket.io').attach(server);
-//une variable pour identifier les client
-var client = 0;
-// un .get() pour récupérer les requetes
-app.get('/', function(request, response)
+//declaration du serveur socket
+//contraction : var io = require('socket.io')(server);
+var IOServer = require('socket.io');
+var io = new IOServer(server);
+
+// reception sur url /
+app.get('/', (request, response)=>
 {
-  //envoi de la réponse => template socket_index.ejs
-  //dans lequel j'injecte la valeur port et client
-  client++;
-  response.render('socket_index.ejs', {port:port, client:client});
+  //envoi du template socket_index.ejs
+  response.status(200).render('socket_index.ejs', {'port': port});
 });
 
-//instantation de la connexion lors de la requete client
-io.sockets.on('connection', function (socket) {
-    //l'objet socket represente la connexion websocket avec le client
-    //j'affiche un message
-    console.log('Un nouveau client est connecté !');
+// ecoute du serveur : event connection
+// un objet Socket representant la connection avec le client est passe lorsque l'event est leve
+io.on('connection', (socket)=>
+{
+  //j'affiche un message
+  console.log("Nouveau client connecté.");
 
-    //lorsque socket leve l'event newclick j'execute la fonction en callback
-    socket.on('newclick', function(client)
-    {
-      //j'affiche un message identifiant l'action client
-      console.log("click send by "+client);
-      //je leve l'event clickreceived pour alerter tous les client avec le message "click send by xxx"
-      io.emit('clickreceived', "click send by "+client);
-    });
-
+  // ecoute du Socket : event sendclick
+  // le parametre msg est passe pendant l'event
+  socket.on('sendclick', (msg)=>
+  {
+    // j'affiche l'id du socket client et le message passe pendant l'event
+    console.log(`click send by ${socket.id}.\n message : ${msg}.` )
+    //emission d'un message clickreceived avec un message
+    io.emit('clickreceived', "Click bien reçu.")
+  });
 });
-
-server.listen(port);
-
+//ecoute du serveur sur le port 8080
+server.listen(8080)
 ```
 
-##### Coté client :
+##### COTE CLIENT
 
-```HTML
+```html
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8"/>
     <title>PAGE TEST SOCKET</title>
     <!-- je declare le lien vers la librarie socket.io client  -->
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js" ></script>
   </head>
   <body>
     <h1>VOICI LA PAGE DE TEST DES SOCKETS</h1>
-    <h2>Client <%= client %></h2>
-    <button onclick="clickOn()">BUTTON</button>
-    <div id="msgbox">
+    <button onclick="sendClick()">SEND</button>
     </div>
     <script>
-      var socket = io.connect('http://localhost:<%= port %>')
-      var client = <%= client %>;
-      function clickOn()
+      // Je cree une connexion entre le client et le serveur
+      const socket = io('http://localhost:<%= port %>').open();
+      //je prepare une fonction lors de l'action sur le bouton
+      function sendClick()
       {
-        socket.emit('newclick', client);
+        //je leve un event sendclick avec un message 
+        socket.emit('sendclick', 'Click sur button SEND');
       }
-
-      socket.on('clickreceived', function(message)
+      //ecoute de l'event clickreceived sur le socket
+      //parametre msg passe pendant l'event 
+      socket.on('clickreceived', (msg)=>
       {
-        var htmlmsg = `<p>${message}</p>`
-        document.getElementById('msgbox').innerHTML = document.getElementById('msgbox').innerHTML + htmlmsg
+        //j'affiche un message d'alerte
+        alert(msg);
       });
     </script>
   </body>
 </html>
 ```
 
+#### SERVER API
 
-####
+L'API s'appuis sur trois objets principaux:
+* [Server](https://socket.io/docs/server-api/#Server)
+* [Namespace](https://socket.io/docs/server-api/#Namespace)
+* [Socket](https://socket.io/docs/server-api/#Socket)
+
+##### [SERVER](https://socket.io/docs/server-api/#Server)
+
+**Server** représente le serveur socket.io, il orchestre les communications clients/serveur et modèle les data pour les rendre compatible avec le protocole websocket.
+
+###### Creation du serveur
+
+Plusieurs formulation sont possible pour creer notre serveur, mais dans chacun des cas on doit associer un [http.Server](https://nodejs.org/api/http.html#http_class_http_server):
+
+```javascript
+//instance serveur http
+var http = require('http').createServer();
+
+//version condensee
+var io = require('socket.io')(http);
+
+//autres versions
+//import module socket.io
+var IOServer = require('socket.io');
+
+//instance Server
+var io = new IOServer(http)
+//ou
+var io = new IOServer();
+io.listen(http) // ou io.attach(http)
+
+```
+
+###### Changer le port découte
+
+Par défaut le port découte du serveur est celui du serveur HTTP mais on peut le modifier avec la fonction Server.listen()
+
+```javascript
+var io = require('socket.io')(http); //port d'ecoute du serveur Http
+io.listen(8181) //ou io.attach(8181) : je change le port
+```
+
+###### Les Sockets ID
+
+Le serveur genere un ID pour chaque socket (connexion) établies avec le client.  
+Par défaut l'ID est une chaine hexadecimal (ex:nJ8dVH7nTF7iIqniAAAB)
+
+Affichage des socket ID : 
+
+```javascript
+...
+const port = 8080
+app.get('/', (request, response)=>
+{
+  //envoi du template socket_index.ejs
+  response.status(200).render('socket_index.ejs', {'port': port});
+});
+
+io.on('connection',(socket)=>
+{
+  //j'affiche le socket id
+  console.log('nouvelle connexion id :' + socket.id)
+  // je recupere la liste des socket id
+  var ids = Object.keys(io.sockets.sockets)
+  console.log('liste des sockets : ' + ids)
+});
+
+app.listen(port)
+...
+```
+
+Il est possible de générer un ID custo pour les socket en intégrant un **middleware** au serveur via le parametre [Server.engine.generateId](https://socket.io/docs/server-api/#server-engine-generateId).  
+**ATTENTION : Cet ID doit être unique pour chaque client.**
+
+Donc coté serveur :
+```javascript
+...
+// middleware bodyparser pour query parsing
+app.use(bodyparser.json())
+// prepare guest var 
+var guest = 0;
+
+// prepare mes data utilisateur
+const userData = {'lafritemema':'lafritemema@gmail.com', 'momo':'dede'}
+
+
+// je defini mon middleware pour generer les ID
+io.engine.generateId = (request)=>
+{
+  //je parse l'url
+  var url = new URL(request.url, `http://${request.headers.host}`);
+  //et je récupere le parametre user, je fait un trim pour supprimer les eventuels espace
+  var user = url.searchParams.get('user').trim()
+
+  // si mon user est dans ma base 
+  if(userData[user])
+  {
+    //je renvoi l'id contenu dans ma base
+    return userData[user];
+  }
+  else
+  {
+    //sinon je renvoi un id de guest
+    guest +=1
+    return "guest"+guest
+  }
+}
+
+// reception sur url /
+app.get('/', (request, response)=>
+{
+  //envoi du template socket_index.ejs j'injecte le user en plus du port
+  var user = request.query.user
+  response.status(200).render('socket_index.ejs', {'port': port, 'user':user});
+});
+
+// a la connection j'affiche les id
+io.on('connection',(socket)=>
+{
+  console.log('nouvelle connexion id :' + socket.id)
+  var ids = Object.keys(io.sockets.sockets)
+  console.log('liste des sockets : ' + ids)
+});
+...
+```
+et coté client:
+```html
+...
+<script>
+      const socket = io('http://localhost:<%= port %>?user=<%= user %> ').open();
+    </script>
+...
+```
+
+###### Contrôle de l'origine ([CORS](https://developer.mozilla.org/fr/docs/Web/HTTP/CORS))
+
+Le CORS est un mécanisme de contrôle serveur-side permettant de vérifier si l'agent utilisateur domicilié sur une autre domaine à l'autorisation d'accéder aux services de l'application serveur.  
+La methode [Server.origins()](https://socket.io/docs/server-api/#server-origins-value) (ou l'option **origin** de l'objet Server) nous permet d'appliquer un CORS sur notre serveur Socket.IO.
+
+
+> Sur express le middleware **[cors](https://expressjs.com/en/resources/middleware/cors.html)** permet d'appliquer des contrôle CORS sur notre Server express.  
+
+```javascript
+var IOServer = require('socket.io')
+var io = new IOServer()
+// je defini une controle d'origin
+// seul le domaine localhost, port 8080 est autorise
+io.origins(['http://localhost:8080'])
+io.listen(8080)
+
+// autre solution 
+var io = new IOServer({origins:['http://localhost:8080']})
+
+//autre solution avec une fonction de callback
+// origins prend 2 parametre (originurl:string, callback:function)
+//le callback prend 2 parametre (message:string, success:boolean)
+io.origins((originurl, callback)=>
+{
+  // si l'url est different de http://localhost:8080
+  if(originurl !== 'http://localhost:8080)
+  {
+    callback("message d'erreur", false) //callback avec mon message d'erreur et le parametre success = false
+  }
+  else
+  {
+    // url est conforme
+    callback(null, true) //pas de message d'erreur, success = true
+  }
+})
+io.listen(8080)
+```
+
+###### Les Namespaces
+
+Le **Namespace** est l'interface possedant toutes les méthodes necessaire pour la communication entre le client et le serveur Socket.IO.
+Lors de l'instanciation d'un objet Server, un objet **[Namespace]()https://socket.io/docs/server-api/#Namespace)** identifié par l'url root '/' est instancié. Tous les clients connection sont lié au Namespace root.
+
+La methode [Server.of()](https://socket.io/docs/server-api/#server-of-nsp) permet d'instancier de nouveaux **Namespace** __enfants__ en fonction de l'url passé en paramêtre :
+
+**Coté serveur :**
+
+```javascript
+...
+//declaration du Server Socket.IO
+// le Namespace root '/' est instancié automatiquement
+var IOServer = require('socket.io');
+var io = new IOServer(server);
+
+app.get('/:room', (request, response)=>
+{
+  //envoi du template socket_index.ejs j'injecte le user en plus du port
+  var room = request.params.room
+  console.log(room)
+  response.status(200).render('socket_index.ejs', {'port': port, 'room': room});
+});
+
+// declaration des Namespace enfants
+const admin_socket = io.of('/admin');
+const user_socket = io.of('/user');
+
+admin_socket.on('connection', (socket)=>
+{
+  console.log('connexion sur le socket admin');
+});
+user_socket.on('connection', (socket)=>
+{
+  console.log('connexion sur le socket user');
+});
+...
+```
+
+**Coté client :**
+
+```html
+  <script>
+      const socket = io('http://localhost:<%= port %>/<%= room %>').open();
+  </script>
+```
+
+
+
+
+
+##### [NAMESPACE](https://socket.io/docs/server-api/#Namespace)
+
+Un **Namespace** est un environnement qui peut être assimilé à un canal de communication.
+
+Le namespace __root__ '/' est instancié lors de la création du serveur.  
+Il peut communiquer avec tous les socket client.
+
+Les Namespaces __enfants__ (instancié via la methode Server.of()) ne peuvent communiquer qu'avec les sockets clients qui lui sont associés et inversement.
+
+La division du Namespace root en namespace enfants permet de diviser la logique de l'application et de securiser les canaux de communication.
+
+###### Communication clients
+
+La communication entre les Socket client et le Namespace est basé sur les events.
+Il utilise donc la méthodes [Namespace.emit()](https://socket.io/docs/server-api/#namespace-emit-eventName-%E2%80%A6args) qui lui permet d'envoyer un message à chaque Sockets représentant les client connectés.
+
+**Coté serveur :**
+```javascript
+...
+app.get('/:room', (request, response)=>
+{
+  //envoi du template socket_index.ejs j'injecte le user en plus du port
+  var room = request.params.room
+  console.log(room)
+  response.status(200).render('socket_index.ejs', {'port': port, 'room': room});
+});
+
+//creation d'un nouveau namespace
+const admin = io.of('/admin');
+
+admin.on('connection', (socket)=>
+  {
+    // affichage du nom 
+    console.log(`Connexion sur ${admin.name}`)
+    // affichage de l'id du socket client 
+    console.log(`Id client : ${socket.id}`);
+    //afficher la liste des id clients qui sont connectés et envoi de la liste à tous les clients
+    admin.clients((err, clients)=>
+    {
+      console.log(clients);
+      //envoi de la liste au clients
+      admin.emit('clientlist', clients);
+    });
+});
+server.listen(8080)
+...
+```
+
+**Coté client :**
+
+```html
+...
+<body>
+    <h1>VOICI LA PAGE DE TEST DES SOCKETS</h1>
+    </div>
+    <h2>Utilisateur connectés : </h2>
+    <div id='container'></div>
+    <script>
+      const socket = io('http://localhost:<%= port %>/<%=room%>').open();
+      // quand event clientlist leve
+      socket.on('clientlist', (list)=>
+      {
+        // generation du html et affichage sur la page
+        var txt = "";
+        for(var c of list)
+        {
+          txt += `<p> Utilisateur ${c}<p>`;
+        }
+        document.getElementById('container').innerHTML = txt;
+      });
+    </script>
+  </body>
+...
+```
+
+###### Les middleware du Namespace
+
+La fonction [Namespace.use()] permet de déclarer un nouveau middleware lié au Namespace, il sera exécuté à chaque nouvelle connexion.  
+Comme express ce middleware comporte quelque parametre : le socket client et le next représentant le middleware suivant.
+
+```javascript
+const admin = io.of('/admin');
+// declaration d'un middleware executé à chaque connexion client
+admin.use((socket, next)=>
+{
+  console.log(`Connexion sur ${admin.name}`)
+  // id du socket client 
+  console.log(`Id client : ${socket.id}`);
+  //appel du middleware suivant
+  next();
+});
+
+admin.on('connection', (socket)=>
+  {
+    //affichage des client et envoi de la liste
+    admin.clients((err, clients)=>
+    {
+      console.log('Liste des clients sur admin\n'+ clients);
+      admin.emit('clientlist', clients);
+    });
+    // middleware lors de reception click
+    socket.on('click', ()=>
+    {
+      console.log(`click send by ${socket.id}`)
+    })
+  });
+
+```
+
+###### Les Rooms
+
+Dans chaque Namespace nous pouvont définir des chaines spécifique : les Rooms.
+Par défaut lors de la création de l'objet Socket coté server, une room identifié par l'id du socket est créée.  
+Mais nous pouvons créée des rooms supplémentaire pour affiner le routing les message emis par les Namespaces.  
+Ces rooms sont créé automatiquement lors de l'appel de la fonction [Socket.join()](https://socket.io/docs/server-api/#socket-join-room-callback)
+
+
+##### [SOCKET](https://socket.io/docs/server-api/#Socket)
+
+Socket est l'objet fondamental pour communiquer avec le navigateur client.
+
+###### Les informations de Socket
+
+L'objet Socket contient les informations concernant la requete websocket via les principaux parametres :
+* Socket.id : id du Socket
+* [Socket.rooms](https://socket.io/docs/server-api/#socket-rooms) : les rooms du sockets
+* [Socket.request](https://socket.io/docs/server-api/#socket-request) : renvoi une instance [Client.request](https://socket.io/docs/server-api/#client-request) (utilise pour acceder au cookies ou User-Agent)
+* [Socket.handshake](https://socket.io/docs/server-api/#socket-handshake): renvoi un objet qui contient les information sur la requete  
+
+###### Le middleware de Socket
+
+Comme Namespace ou Server la fonction [Socket.use()](https://socket.io/docs/server-api/#socket-use-fn) permet d'ajouter des middleware.
+Ce middleware sera executé à chaque requête transmise par ce Socket.
+
+###### La communication client
+
+Le Socket server envoi des message vers le socket client via les méthode .emit() et ecoute les message du socket client via la methode .on()
+
+###### Joindre/Quitter une Room
+
+La methodes [Socket.join()](https://socket.io/docs/server-api/#socket-join-room-callback) permet de creer/joindre une Room et la methode [Socket.leave()](https://socket.io/docs/server-api/#socket-leave-room-callback) permet de la quitter.
+
+###### Selection des destinataires
+
+Via la methode [Socket.to()](https://socket.io/docs/server-api/#socket-to-room) le Socket peut selectionner un destinataire.
+Ce destinataire peut être une ou plusieurs  Rooms ou Sockets.
+
+###### Le Broadcasting
+
+Le flag __broadcast__ placé devant la fonction Socket.emit() permet d'envoyer un message à tous les Socket du namespace, excepté le Socket emetteur.
+
+Donc :
+```javascript
+// sans broadcast seul le socket client recoit le message
+socket.emit('msgevent', 'mon message')
+```
+Deviens:
+```javascript
+// avec broadcast, tous les socket client accepté le socket emmetteur recoivent le message
+socket.broadcast.emit('msgevent', 'mon message')
+```
+
+###### Deconnexion du socket client
+
+La methode [Socket.disconnect()](https://socket.io/docs/server-api/#socket-disconnect-close) du socket coté Server permet de déconnecter le Socket client.
+
+###### Réagir à une deconnexion du client
+
+L'écoute de l'event __disconnect__ permet de réagir à la deconnexion du Socket client.
+Le parametre __reason__ passe au callback permet de récupérer la raison de la deconnexion.
+
+```javascript
+
+user.on('connection', (socket)=>
+{
+  socket.on('disconnect', (reason)=>
+  {
+    console.log(`Deconnexion du client ${socket.id}\n.Raison : ${reason}`).
+  });
+});
+
+```
+
+###### Réagir à une erreur Socket
+
+L'écoute de l'event __error__ permet de réagir a une erreur sur la connexion Socket Client / Socket Serveur.
+Le parametre __reason__ passe au callback permet de récupérer l'object Error décrivant le problème.
+
+
+```javascript
+
+user.on('connection', (socket)=>
+{
+  socket.on('error', (error)=>
+  {
+    console.log('Erreur survenue');
+    console.log(error);
+  });
+});
+
+```
+
+
+
+
+
+
+
+
+
+
+
+#### CLIENT API
+
+L'API client repose sur trois objets principaux:
+* [IO](https://socket.io/docs/client-api/#IO)
+* [Manager](https://socket.io/docs/client-api/#Manager)
+* [Socket](https://socket.io/docs/client-api/#Socket)
+
+##### IO
+
+Cet Objet permet principalement d'instancier le Socket client pour la communication avec les option necessaires.
+
+Il renvoi donc une instance de [Socket](https://socket.io/docs/client-api/#Socket).  
+On utilise ensuite la fonction [Socket.open()](https://socket.io/docs/client-api/#socket-open) pour initialiser la connexion
+
+###### Initialisation de la connexion
+
+```html
+  <script>
+      // connexion au namespace root
+      const socket = io('http://localhost:8080', {query: {token:'momo'}});
+
+      // connexion namespace admin 
+      const socket = io('http://localhost:8080/admin');
+
+      // si le server socket est sous le meme domaine que le serveur express
+      const socket = io('/admin');
+
+      //connexion au serveur
+      socket.open()
+
+  </script>
+```
+
+###### Initialisation de la connexion avec paramêtre
+
+On peut intégrer des parametres pendant création du Socket
+
+**Coté client :**
+```html
+<script>
+const socket = io('/admin?token=momo').open();
+// ou 
+const socket = io('/admin', 
+  {query: 
+    {token:'momo'}
+  }).open()
+</script>
+```
+
+**Coté serveur :**
+
+```javascript
+const admin = io.of('/admin');
+admin.on('connection', (socket)=>
+  {
+    console.log(socket.handshake.query.token);
+  });
+```
+
+##### SOCKET
+
+L'objet Socket client comporte les fonction pricipale tel que Socket.emit() et Socket.close() pour l'écoute et la transmission de message.  
+Ces méthode fonctionnent de la même façon que celle coté Server
+
+La methode Socket.close() permet de déconnecter le Socket coté client.
+
+Les parametres Socket.connected et Socket.disconnected permet de connaitre l'état du socket.
+
+Les [Events](https://socket.io/docs/client-api/#Events) __connect__, __disconnect__, __error__ ... permettent de réagir en fonction des étapes de la connexion.
+
+
+#### EXERCICE EXPRESS/SOCKET.IO
+
+Coder une application de chat qui reprend les fonctions principale de express et socket.io.
