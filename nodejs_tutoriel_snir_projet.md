@@ -1416,7 +1416,7 @@ io.on('connection',(socket)=>
   console.log('liste des sockets : ' + ids)
 });
 
-server.listen(port)
+app.listen(port)
 ...
 ```
 
@@ -1857,4 +1857,12 @@ Les [Events](https://socket.io/docs/client-api/#Events) __connect__, __disconnec
 
 #### EXERCICE EXPRESS/SOCKET.IO
 
-Coder une application de chat qui reprend les fonctions principale de express et socket.io.
+Coder une application de chat qui reprend les fonctions principale de express et socket.io :
+* identification/connexion sur le chat (express-session ou cookie-parser, redirection vers page login, controle utilisateur existant...)
+* pouvoir acceder et naviger entre les pages pour accéder aux différente rooms de chat (template + injection de variable + controle accès au rooms)
+* échanger des message en temps réel avec les utilisateur connectés à la même room (socket Namespace, Rooms), pouvoir identifier l'expediteur du message.
+* échanger des messages privé avec un utilisateur.
+* avoir la liste des utilisateurs connecté en tps réel sur la room.
+* enregistrer les message transmis sur une room pour pouvoir les réafficher à la prochaine connexion.
+* un peu de css pour le style.
+* une interface client sous le modèle MVC serait apprécié (alpinejs, VueJS ...)
